@@ -1,0 +1,28 @@
+[package]
+name = "homebrew"
+version = "0.1.0"
+authors = ["Dan Cardin <ddcardin@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "homebrew"
+path = "src/lib/lib.rs"
+
+[[bin]]
+name = "homebrew-server"
+path = "src/server/main.rs"
+
+[dependencies]
+rocket = { git = "https://github.com/SergioBenitez/Rocket" }
+lazy_static = "*"
+serde = { version = "*", features = ["derive"] }
+maplit = "*"
+diesel = { version = "*", features = ["chrono"] }
+diesel_migrations = "*"
+log = "*"
+chrono = "*"
+
+[dependencies.rocket_contrib]
+git = "https://github.com/SergioBenitez/Rocket"
+default-features = false
+features = ["json", "diesel_sqlite_pool"]
