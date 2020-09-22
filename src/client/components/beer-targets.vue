@@ -14,146 +14,156 @@ table.col.table.table-bordered.mb-0
         .d-flex.text-sm.text-secondary
           .mx-1.specific-gravity
             label.mb-0(for="targetOG") Target
-            input.form-control(
-              v-model="targetOG"
-              type="number"
-              min="0"
-              max="2"
+            input#targetInput.form-control(
+              v-model.number="targetOG",
+              type="number",
+              min="0",
+              max="2",
               step=".001"
-              id="targetInput"
             )
           .mx-1.specific-gravity
             label.mb-0(for="actualOG") Actual
-            input.form-control(
-              v-model="actualOG"
-              type="number"
-              min="0"
-              max="2"
+            input#actualInput.form-control(
+              v-model.number="actualOG",
+              type="number",
+              min="0",
+              max="2",
               step=".001"
-              id="actualInput"
             )
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1.specific-gravity
             label.mb-0(for="targetFG") Target
-            input.form-control(
-              v-model="targetFG"
-              type="number"
-              min="0"
-              max="2"
+            input#targetInput.form-control(
+              v-model.number="targetFG",
+              type="number",
+              min="0",
+              max="2",
               step=".001"
-              id="targetInput"
             )
           .mx-1.specific-gravity
             label.mb-0(for="actualFG") Actual
-            input.form-control(id="actualInput")
+            input#actualInput.form-control
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1.abv
             label.mb-0(for="targetABV") Target
-            input.form-control(id="targetInput" readonly v-bind:value="targetABV")
+            input#targetInput.form-control(
+              ,
+              readonly,
+              v-bind:value="targetABV"
+            )
           .mx-1.abv
             label.mb-0(for="actualABV") Actual
-            input.form-control(id="actualInput")
+            input#actualInput.form-control
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1
             label.mb-0(for="targetIBU") Target
-            input.form-control.ibu(id="targetInput")
+            input#targetInput.form-control.ibu
           .mx-1
             label.mb-0(for="actualIBU") Actual
-            input.form-control.ibu(id="actualInput")
+            input#actualInput.form-control.ibu
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1
+            label.mb-0(for="targetSRM") Target
+            input#targetInput.form-control.srm(
+              v-model="targetSRM",
+              @input="targetSRMInput"
+            )
             span(:style="targetSRMHex")
               fa(icon="beer")
-            label.mb-0(for="targetSRM") Target
-            input.form-control.srm(
-              v-model="targetSRM"
-              @input="targetSRMInput"
-              id="targetInput"
-            )
           .mx-1
+            label.mb-0(for="actualSRM") Actual
+            input#actualInput.form-control.srm(
+              v-model="actualSRM",
+              @input="actualSRMInput"
+            )
             span(:style="actualSRMHex")
               fa(icon="beer")
-            label.mb-0(for="actualSRM") Actual
-            input.form-control.srm(
-              v-model="actualSRM"
-              @input="actualSRMInput"
-              id="actualInput"
-            )
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1
             label.mb-0(for="targetVolume") Target
-            input.form-control(
-              id="targetInput"
-            )
+            input#targetInput.form-control
           .mx-1
             label.mb-0(for="actualVolume") Actual
-            input.form-control(id="actualInput")
+            input#actualInput.form-control
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import { Watch } from "vue-property-decorator";
+<script setup lang="ts">
 import axios from "axios";
+import { computed, reactive, ref, watch } from "vue";
 
-@Options({ components: {} })
-export default class BeerTargets extends Vue {
-  targetOG = "1";
-  actualOG = "1";
+export default {
+  setup() {
+    const targetOG = ref("1");
+    const actualOG = ref("1");
 
-  targetFG = "1";
-  actualFG = "1";
+    const targetFG = ref("1");
+    const actualFG = ref("1");
 
-  targetSRM = "";
-  actualSRM = "";
-  targetSRMHex = {};
-  actualSRMHex = {};
+    const targetSRM = ref("");
+    const actualSRM = ref("");
+    const targetSRMHex = reactive({});
+    const actualSRMHex = reactive({});
 
-  @Watch("targetOG")
-  onTargetOGChanged(val: string, oldVal: string) {
-    if (!this.actualOG || this.actualOG == oldVal) {
-      this.actualOG = val;
-    }
-  }
+    watch(targetOG, (val: string, oldVal: string) => {
+      if (!actualOG.value || actualOG.value == oldVal) {
+        actualOG.value = val;
+      }
+    });
 
-  @Watch("targetFG")
-  onTargetFGChanged(val: string, oldVal: string) {
-    if (!this.actualFG || this.actualFG == oldVal) {
-      this.actualFG = val;
-    }
-  }
+    watch(targetFG, (val: string, oldVal: string) => {
+      if (!actualFG.value || actualFG.value == oldVal) {
+        actualFG.value = val;
+      }
+    });
 
-  get targetABV() {
-    const targetOG = +this.targetOG;
-    const targetFG = +this.targetFG;
-    return (
-      ((76.08 * (targetOG - targetFG)) / (1.775 - targetOG)) *
-      (targetFG / 0.794)
-    );
-  }
+    const targetABV = computed(() => {
+      const og = +targetOG.value;
+      const fg = +targetFG.value;
+      return ((76.08 * (og - fg)) / (1.775 - og)) * (fg / 0.794);
+    });
 
-  async targetSRMInput() {
-    let color = "#000000";
-    if (this.targetSRM) {
-      const response = await axios.post("/api/srm.convert", { value: +this.targetSRM });
-      color = response.data.value;
-    }
-    this.targetSRMHex = { color };
-  }
+    const targetSRMInput = async () => {
+      let color = "#000000";
+      if (targetSRM.value) {
+        const response = await axios.post("/api/srm.convert", {
+          value: +targetSRM.value,
+        });
+        color = response.data.value;
+      }
+      targetSRMHex.color = color;
+    };
 
-  async actualSRMInput() {
-    let color = "#000000";
-    if (this.actualSRM) {
-      const response = await axios.post("/api/srm.convert", { value: +this.actualSRM });
-      color = response.data.value;
-    }
-    this.actualSRMHex = { color };
-  }
-}
+    const actualSRMInput = async () => {
+      let color = "#000000";
+      if (actualSRM.value) {
+        const response = await axios.post("/api/srm.convert", {
+          value: +actualSRM.value,
+        });
+        color = response.data.value;
+      }
+      actualSRMHex.color = color;
+    };
+
+    return {
+      actualSRMInput,
+      targetSRMInput,
+      targetABV,
+      targetOG,
+      actualOG,
+      targetFG,
+      actualFG,
+      targetSRM,
+      actualSRM,
+      targetSRMHex,
+      actualSRMHex,
+    };
+  },
+};
 </script>
 
 <style scoped lang="scss">

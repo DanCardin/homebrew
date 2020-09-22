@@ -1,6 +1,7 @@
 <template lang="pug">
 #nav
-  router-link(to="/") Home
+  router-link(to="/")
+    img(src="favicon.svg", alt="Homebrew", width="32", height="32")
 router-view
 </template>
 

@@ -1,7 +1,34 @@
-CREATE TABLE brew (
+CREATE TABLE beer (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name VARCHAR NOT NULL DEFAULT '',
     style VARCHAR NOT NULL DEFAULT '',
-    date DATE,
-    batch INTEGER NOT NULL DEFAULT 1
 )
+
+CREATE TABLE batch {
+    beer_id INTEGER NOT NULL,
+    date DATE,
+    PRIMARY KEY (beer_id, date)
+}
+
+CREATE TABLE batch_measurement {
+    beer_id INTEGER NOT NULL,
+    name VARCHAR NOT NULL,
+    value NUMERIC(6, 3) NOT NULL,
+    time TIMESTAMP DEFAULT NULL,
+    PRIMARY KEY (beer_id, name),
+}
+
+CREATE TABLE batch_ingredient {
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    beer_id INTEGER NOT NULL KEY,
+    ingredient VARCHAR NOT NULL DEFAULT '',
+    amount NUMERIC(5, 2) NOT NULL DEFAULT 0,
+    unit VARCHAR NOT NULL DEFAULT '',
+    time VARCHAR DEFAULT NULL,
+}
+
+CREATE TABLE batch_note {
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    beer_id INTEGER NOT NULL,
+    value TEXT NOT NULL,
+}

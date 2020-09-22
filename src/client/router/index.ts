@@ -1,23 +1,24 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import Home from "@/client/views/home.vue";
-import BrewLog from "@/client/views/brew-log.vue";
+import BrewLog from "/@client/views/brew-log.vue";
+import Home from "/@client/views/home.vue";
+import { RouteRecordRaw, createRouter, createWebHashHistory } from "vue-router";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: Home,
   },
   {
-    path: "/brew/<id>",
+    path: "/brew/:brewId",
     name: "brew",
-    component: BrewLog
-  }
+    props: true,
+    component: BrewLog,
+  },
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
 });
 
 export default router;

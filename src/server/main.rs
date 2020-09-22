@@ -52,5 +52,5 @@ fn configure() -> Rocket {
     ignite()
         .attach(Db::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_migrations))
-        .mount("/", routes![srm_convert, routes::brew::new_brew, routes::brew::list_brews])
+        .mount("/", routes![srm_convert, routes::brew::new_brew, routes::brew::list_brews, routes::brew::update_brew])
 }

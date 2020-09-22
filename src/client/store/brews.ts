@@ -1,29 +1,35 @@
+import { Store } from "/@client/store";
 import axios from "axios";
-import { reactive, ref, readonly } from "vue";
-import { Store } from "@/client/store";
 
-interface Brews extends Object {
-  brews: [];
+interface Brew {
+  id: number;
+  name: string | undefined;
 }
 
-export class BrewsStore {
-  state: any;
+interface Brews extends Object {
+  brews: Brew[];
+}
 
-  constructor() {
-    this.state = reactive({ brews: ref([]) });
+export class BrewsStore extends Store<Brews> {
+  protected data(): Brews {
+    return {
+      brews: [],
+    };
   }
 
-  public getState() {
-    return readonly(this.state);
+  public async getBrews() {
+    const { data } = await axios.post<Brew[]>("/api/brew.list", {});
+    this.state.brews.splice(0, 0, ...data);
   }
 
-  async getBrews() {
-    const { data } = await axios.post("/api/brew.list", {});
-    this.state.brews = data;
-  }
-
-  async newBrew() {
+  public async newBrew() {
     const { data } = await axios.post("/api/brew.new", {});
+    return data;
+  }
+
+  public async update(brew: Brew) {
+    console.log(brew);
+    const { data } = await axios.post("/api/brew.update", brew);
     return data;
   }
 }

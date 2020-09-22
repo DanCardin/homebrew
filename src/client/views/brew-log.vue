@@ -3,7 +3,7 @@ div
   .card.m-2.border-secondary
     .card-header.text-uppercase Beer Info
     .card-body.text-secondary
-      beer-info
+      beer-info(:brewId="brewId")
     beer-targets
 
   .card.m-2.border-secondary
@@ -14,7 +14,7 @@ div
           table.table.table-bordered
             thead
               tr
-                th(width='75%') Grain
+                th(width="75%") Grain
                 th Weight
             tbody
               tr
@@ -26,11 +26,11 @@ div
           table.table.table-bordered
             thead
               tr
-                th(width='65%')
+                th(width="65%")
                   span Hops
                   span.text-sm.text-secondary &nbsp;(Form/AA)
-                th(width='20%') Time
-                th(width='15%') Weight
+                th(width="20%") Time
+                th(width="15%") Weight
             tbody
               tr
                 td
@@ -44,7 +44,7 @@ div
           table.table.table-bordered
             thead
               tr
-                th(width='75%')
+                th(width="75%")
                   span H20 Treatments
                 th Weight
             tbody
@@ -57,7 +57,7 @@ div
           table.table.table-bordered
             thead
               tr
-                th(width='75%') Other Ingredients
+                th(width="75%") Other Ingredients
                 th Weight/Amt
             tbody
               tr
@@ -85,62 +85,62 @@ div
               .d-flex.text-sm.text-secondary
                 .mx-1
                   label.mb-0(for="targetInput") time
-                  input.form-control(id="targetInput")
+                  input#targetInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") temp
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") vol
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
             td.p-1
               .d-flex.text-sm.text-secondary
                 .mx-1
                   label.mb-0(for="targetInput") time
-                  input.form-control(id="targetInput")
+                  input#targetInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") temp
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
             td.p-1
               .d-flex.text-sm.text-secondary
                 .mx-1
                   label.mb-0(for="targetInput") time
-                  input.form-control(id="targetInput")
+                  input#targetInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") temp
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
             td.p-1
               .d-flex.text-sm.text-secondary
                 .mx-1
                   label.mb-0(for="targetInput") time
-                  input.form-control(id="targetInput")
+                  input#targetInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") temp
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") vol
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
             td.p-1
               .d-flex.text-sm.text-secondary
                 .mx-1
                   label.mb-0(for="targetInput") time
-                  input.form-control(id="targetInput")
+                  input#targetInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") gravity
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") vol
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
             td.p-1
               .d-flex.text-sm.text-secondary
                 .mx-1
                   label.mb-0(for="targetInput") time
-                  input.form-control(id="targetInput")
+                  input#targetInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") gravity
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
                 .mx-1
                   label.mb-0(for="actualInput") vol
-                  input.form-control(id="actualInput")
+                  input#actualInput.form-control
     .card-footer
 
   .row
@@ -151,10 +151,10 @@ div
           .row.card-title.text-left.m-2
             .col
               label.mb-0(for="targetInput") Yeast
-              input.form-control(id="targetInput")
+              input#targetInput.form-control
             .col.text-right
               label.mb-0(for="targetInput") Volume
-              input.form-control(id="targetInput")
+              input#targetInput.form-control
           table.table.table-bordered.mb-0
             thead
               tr.text-uppercase
@@ -165,13 +165,13 @@ div
               tr.text-uppercase
                 td.p-1
                   .mx-1
-                    input.form-control(id="targetInput")
+                    input#targetInput.form-control
                 td.p-1
                   .mx-1
-                    input.form-control(id="actualInput")
+                    input#actualInput.form-control
                 td.p-1
                   .mx-1
-                    input.form-control(id="actualInput")
+                    input#actualInput.form-control
 
     .col-7
       .row
@@ -191,46 +191,56 @@ div
                       .d-flex.text-sm.text-secondary
                         .mx-1
                           label.mb-0(for="targetInput") Date
-                          input.form-control(id="targetInput")
+                          input#targetInput.form-control
                         .mx-1
                           label.mb-0(for="actualInput") Gravity
-                          input.form-control(id="actualInput")
+                          input#actualInput.form-control
                     td.p-1
                       .d-flex.text-sm.text-secondary
                         .mx-1
                           label.mb-0(for="targetInput") Date
-                          input.form-control(id="targetInput")
+                          input#targetInput.form-control
                         .mx-1
                           label.mb-0(for="actualInput") Gravity
-                          input.form-control(id="actualInput")
+                          input#actualInput.form-control
                     td.p-1
                       .d-flex.text-sm.text-secondary
                         .mx-1
                           label.mb-0(for="targetInput") Date
-                          input.form-control(id="targetInput")
+                          input#targetInput.form-control
                         .mx-1
                           label.mb-0(for="actualInput") Gravity
-                          input.form-control(id="actualInput")
+                          input#actualInput.form-control
       .row
         .col
           .card.m-2.border-secondary
             .card-header.text-uppercase Notes
             .card-body.text-secondary.p-0
               .mx-1
-                input.form-control(id="targetInput")
+                input#targetInput.form-control
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import BeerInfo from "@/client/components/beer-info.vue";
-import BeerTargets from "@/client/components/beer-targets.vue";
+<script setup lang="ts">
+import BeerInfo from "/@client/components/beer-info.vue";
+import BeerTargets from "/@client/components/beer-targets.vue";
+import { onMounted } from "vue";
 
-@Options({ components: {BeerInfo, BeerTargets} })
-export default class BrewLog extends Vue {}
+export default {
+  props: {
+    brewId: Number,
+  },
+  components: { BeerInfo, BeerTargets },
+  setup(props) {
+    onMounted(async () => {
+      console.log("prop", props.brewId);
+    });
+    return {};
+  },
+};
 </script>
 
 <style scoped lang="scss">
-  .text-sm {
-    font-size: .6em;
-  }
+.text-sm {
+  font-size: 0.6em;
+}
 </style>
