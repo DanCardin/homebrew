@@ -3,7 +3,7 @@ div
   .card.m-2.border-secondary
     .card-header.text-uppercase Beer Info
     .card-body.text-secondary
-      beer-info(:brewId="brewId")
+      brew-info(:beerId="beerId")
     beer-targets
 
   .card.m-2.border-secondary
@@ -221,19 +221,17 @@ div
 </template>
 
 <script setup lang="ts">
-import BeerInfo from "/@client/components/beer-info.vue";
 import BeerTargets from "/@client/components/beer-targets.vue";
+import BrewInfo from "/@client/components/brew-info.vue";
 import { onMounted } from "vue";
 
 export default {
   props: {
-    brewId: Number,
+    beerId: Number,
   },
   components: { BeerInfo, BeerTargets },
   setup(props) {
-    onMounted(async () => {
-      console.log("prop", props.brewId);
-    });
+    onMounted(async () => {});
     return {};
   },
 };

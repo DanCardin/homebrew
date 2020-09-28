@@ -1,9 +1,30 @@
 <template lang="pug">
-#nav
-  router-link(to="/")
-    img(src="favicon.svg", alt="Homebrew", width="32", height="32")
+#nav.navbar.navbar-light.bg-light.text-dark
+  router-link.navbar-brand(to="/")
+    img.m-2(src="favicon.svg", width="32", height="32", loading="lazy")
+    span.align-middle Homebrew
+  fa.justify-content-end.text-dark.m-2(
+    v-if="requestPending",
+    icon="cog",
+    size="lg",
+    spin
+  )
+
 router-view
 </template>
+<script lang="ts">
+import { requestStore } from "/@client/store/request";
+import { computed } from "vue";
+
+export default {
+  setup() {
+    const pendingRequests = requestStore.getState().pendingRequests;
+    const requestPending = computed(() => pendingRequests.size);
+
+    return { requestPending };
+  },
+};
+</script>
 
 <style lang="scss">
 #app {
@@ -12,18 +33,5 @@ router-view
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
 }
 </style>

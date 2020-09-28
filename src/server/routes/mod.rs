@@ -1,1 +1,2 @@
-pub mod brew;
+pub mod batch;
+pub mod beer;

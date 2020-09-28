@@ -1,9 +1,9 @@
 use lazy_static::lazy_static;
-use std::collections::HashMap;
 use maplit::hashmap;
+use std::collections::HashMap;
 
 lazy_static! {
-    pub static ref SRM_TO_HEX: HashMap<u8, &'static str> = hashmap!{
+    pub static ref SRM_TO_HEX: HashMap<u8, &'static str> = hashmap! {
         1 => "#FFE699",
         2 => "#FFD878",
         3 => "#FFCA5A",

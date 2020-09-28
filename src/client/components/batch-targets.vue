@@ -1,5 +1,5 @@
 <template lang="pug">
-table.col.table.table-bordered.mb-0
+table.col.table.table-bordered.mx-0
   thead
     tr
       th OG
@@ -16,6 +16,7 @@ table.col.table.table-bordered.mb-0
             label.mb-0(for="targetOG") Target
             input#targetInput.form-control(
               v-model.number="targetOG",
+              @blur="saveMeasurement",
               type="number",
               min="0",
               max="2",
@@ -109,18 +110,9 @@ export default {
     const targetSRMHex = reactive({});
     const actualSRMHex = reactive({});
 
-    watch(targetOG, (val: string, oldVal: string) => {
-      if (!actualOG.value || actualOG.value == oldVal) {
-        actualOG.value = val;
-      }
-    });
-
-    watch(targetFG, (val: string, oldVal: string) => {
-      if (!actualFG.value || actualFG.value == oldVal) {
-        actualFG.value = val;
-      }
-    });
-
+    async function saveMeasurement(event) {
+      console.log(event);
+    }
     const targetABV = computed(() => {
       const og = +targetOG.value;
       const fg = +targetFG.value;

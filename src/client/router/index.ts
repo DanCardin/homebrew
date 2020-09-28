@@ -1,4 +1,4 @@
-import BrewLog from "/@client/views/brew-log.vue";
+import Beer from "/@client/views/beer.vue";
 import Home from "/@client/views/home.vue";
 import { RouteRecordRaw, createRouter, createWebHashHistory } from "vue-router";
 
@@ -9,10 +9,10 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
   },
   {
-    path: "/brew/:brewId",
-    name: "brew",
-    props: true,
-    component: BrewLog,
+    path: "/beer/:beerId",
+    name: "beer",
+    props: (route) => ({ beerId: +route.params.beerId }),
+    component: Beer,
   },
 ];
 
