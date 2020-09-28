@@ -1,12 +1,6 @@
 <template lang="pug">
 div
   .card.m-2.border-secondary
-    .card-header.text-uppercase Beer Info
-    .card-body.text-secondary
-      brew-info(:beerId="beerId")
-    beer-targets
-
-  .card.m-2.border-secondary
     .card-header.text-uppercase Ingredients
     .card-body.text-left.text-secondary
       .row
@@ -221,18 +215,9 @@ div
 </template>
 
 <script setup lang="ts">
-import BeerTargets from "/@client/components/beer-targets.vue";
-import BrewInfo from "/@client/components/brew-info.vue";
-import { onMounted } from "vue";
-
 export default {
   props: {
     beerId: Number,
-  },
-  components: { BeerInfo, BeerTargets },
-  setup(props) {
-    onMounted(async () => {});
-    return {};
   },
 };
 </script>

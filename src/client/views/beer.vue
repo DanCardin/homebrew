@@ -13,6 +13,5 @@ import BeerInfo from "/@client/components/beer-info.vue";
 export default {
   components: { BeerInfo, Batches },
   props: { beerId: Number },
-  setup(props) {},
 };
 </script>

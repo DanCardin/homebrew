@@ -6,8 +6,8 @@
     "dev": "vite",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "fix": "vue-cli-service lint --fix",
-    "lint": "vue-cli-service lint --max-warnings=0"
+    "fix": "vue-cli-service lint",
+    "lint": "vue-cli-service lint --no-fix --max-warnings=0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
@@ -54,6 +54,7 @@
   "eslintConfig": {
     "root": true,
     "env": {
+      "browser": true,
       "node": true
     },
     "extends": [

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+const path = require("path");
+
 module.exports = {
   pwa: {
     name: "Homebrew",
@@ -13,7 +16,7 @@ module.exports = {
     devtool: "source-map",
   },
   chainWebpack: (config) => {
-    // config.resolve.alias.set("/", path.resolve("src/client"));
+    config.resolve.alias.set("/@client", path.resolve("src/client"));
   },
   devServer: {
     proxy: {
