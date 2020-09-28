@@ -13,18 +13,18 @@ table.col.table.table-bordered.mx-0
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1.specific-gravity
-            label.mb-0(for="targetOG") Target
-            input#targetInput.form-control(
+            label.mb-0(for="targetOGInput") Target
+            input#targetOGInput.form-control(
+              @blur="saveMeasurement('targetOG', targetOG)",
               v-model.number="targetOG",
-              @blur="saveMeasurement",
               type="number",
               min="0",
               max="2",
               step=".001"
             )
           .mx-1.specific-gravity
-            label.mb-0(for="actualOG") Actual
-            input#actualInput.form-control(
+            label.mb-0(for="actualOGInput") Actual
+            input#actualOGInput.form-control(
               v-model.number="actualOG",
               type="number",
               min="0",
@@ -34,8 +34,8 @@ table.col.table.table-bordered.mx-0
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1.specific-gravity
-            label.mb-0(for="targetFG") Target
-            input#targetInput.form-control(
+            label.mb-0(for="targetFGInput") Target
+            input#targeFGtInput.form-control(
               v-model.number="targetFG",
               type="number",
               min="0",
@@ -43,41 +43,41 @@ table.col.table.table-bordered.mx-0
               step=".001"
             )
           .mx-1.specific-gravity
-            label.mb-0(for="actualFG") Actual
-            input#actualInput.form-control
+            label.mb-0(for="actualFGInput") Actual
+            input#actualFGInput.form-control
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1.abv
-            label.mb-0(for="targetABV") Target
-            input#targetInput.form-control(
+            label.mb-0(for="targetABVInput") Target
+            input#targetABVInput.form-control(
               ,
               readonly,
               v-bind:value="targetABV"
             )
           .mx-1.abv
-            label.mb-0(for="actualABV") Actual
-            input#actualInput.form-control
+            label.mb-0(for="actualABVInput") Actual
+            input#actualABVInput.form-control
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1
-            label.mb-0(for="targetIBU") Target
-            input#targetInput.form-control.ibu
+            label.mb-0(for="targetIBUInput") Target
+            input#targetIBUInput.form-control.ibu
           .mx-1
-            label.mb-0(for="actualIBU") Actual
-            input#actualInput.form-control.ibu
+            label.mb-0(for="actualIBUInput") Actual
+            input#actualIBUInput.form-control.ibu
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1
-            label.mb-0(for="targetSRM") Target
-            input#targetInput.form-control.srm(
+            label.mb-0(for="targetSRMInput") Target
+            input#targetSRMInput.form-control.srm(
               v-model="targetSRM",
               @input="targetSRMInput"
             )
             span(:style="targetSRMHex")
               fa(icon="beer")
           .mx-1
-            label.mb-0(for="actualSRM") Actual
-            input#actualInput.form-control.srm(
+            label.mb-0(for="actualSRMInput") Actual
+            input#actualSRMInput.form-control.srm(
               v-model="actualSRM",
               @input="actualSRMInput"
             )
@@ -86,17 +86,20 @@ table.col.table.table-bordered.mx-0
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1
-            label.mb-0(for="targetVolume") Target
-            input#targetInput.form-control
+            label.mb-0(for="targetVolumeInput") Target
+            input#targetVolumeInput.form-control
           .mx-1
-            label.mb-0(for="actualVolume") Actual
-            input#actualInput.form-control
+            label.mb-0(for="actualVolumeInput") Actual
+            input#actualVolumneInput.form-control
 </template>
 
 <script setup lang="ts">
 import axios from "axios";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref } from "vue";
 
+interface Color {
+  color: string;
+}
 export default {
   setup() {
     const targetOG = ref("1");
@@ -105,14 +108,17 @@ export default {
     const targetFG = ref("1");
     const actualFG = ref("1");
 
+    const actualABV = ref("");
+
+    const targetIBU = ref("");
+    const actualIBU = ref("");
+
     const targetSRM = ref("");
     const actualSRM = ref("");
-    const targetSRMHex = reactive({});
-    const actualSRMHex = reactive({});
 
-    async function saveMeasurement(event) {
-      console.log(event);
-    }
+    const targetSRMHex: reactive<Color> = reactive({});
+    const actualSRMHex: reactive<Color> = reactive({});
+
     const targetABV = computed(() => {
       const og = +targetOG.value;
       const fg = +targetFG.value;
@@ -141,6 +147,9 @@ export default {
       actualSRMHex.color = color;
     };
 
+    async function saveMeasurement(key, value) {
+      console.log(key, value);
+    }
     return {
       actualSRMInput,
       targetSRMInput,
@@ -149,10 +158,14 @@ export default {
       actualOG,
       targetFG,
       actualFG,
+      actualABV,
+      targetIBU,
+      actualIBU,
       targetSRM,
       actualSRM,
       targetSRMHex,
       actualSRMHex,
+      saveMeasurement,
     };
   },
 };

@@ -9,6 +9,7 @@
           v-model="date",
           v-show="editing",
           @blur="changeDate",
+          ref="dateInput",
           type="date"
         )
 
@@ -34,6 +35,7 @@ export default {
     batch: Object,
   },
   setup(props) {
+    const dateInput: ref<HTMLInputElement> = ref(null);
     const editing = ref(false);
     const expanded = ref(false);
     const caretDirection = computed(() =>
@@ -41,15 +43,20 @@ export default {
     );
 
     async function changeDate() {
-      await beerStore.updateBatchDate(
-        props.beerId,
-        props.batch.id,
-        props.date.value
-      );
+      if (props.date) {
+        await beerStore.updateBatchDate(
+          props.beerId,
+          props.batch.id,
+          props.date.value
+        );
+      }
       editing.value = false;
     }
     function toggleEditing() {
       editing.value = !editing.value;
+      setTimeout(() => {
+        dateInput.value.focus();
+      }, 0);
     }
     function toggleExpanded() {
       expanded.value = !expanded.value;
@@ -60,6 +67,7 @@ export default {
     }
     return {
       date: props.batch.date,
+      dateInput,
       expanded,
       editing,
       changeDate,
