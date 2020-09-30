@@ -1,14 +1,16 @@
-use crate::{schema::batch, Db};
+use crate::error::UserError;
+use actix_web::{
+    web::{Data, Json},
+    HttpResponse,
+};
 use chrono::NaiveDate;
-use diesel::prelude::*;
 use log::info;
-use rocket::post;
-use rocket_contrib::json::Json;
 use serde::{Deserialize, Serialize};
+use sqlx;
+use sqlx::postgres::PgPool;
 
-#[derive(Insertable, Deserialize)]
+#[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[table_name = "batch"]
 pub struct NewBatch {
     pub beer_id: i32,
 }
@@ -20,7 +22,7 @@ pub struct BatchUpdate {
     pub date: Option<NaiveDate>,
 }
 
-#[derive(Queryable, Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Batch {
     pub id: i32,
@@ -29,107 +31,114 @@ pub struct Batch {
 }
 
 impl Batch {
-    pub fn insert(conn: &mut SqliteConnection, new_batch: NewBatch) {
-        diesel::insert_into(batch::table)
-            .values(&new_batch)
-            .execute(conn)
-            .expect("error");
+    pub async fn insert(db: &PgPool, new_batch: NewBatch) -> Result<Self, UserError> {
+        let trans = db.begin().await?;
+
+        let beer = sqlx::query_as!(
+            Batch,
+            "INSERT INTO batch (beer_id) VALUES ($1) RETURNING id, beer_id, date",
+            new_batch.beer_id
+        )
+        .fetch_one(db)
+        .await?;
+
+        trans.commit().await?;
+        Ok(beer)
     }
 
-    pub fn find_last(conn: &mut SqliteConnection) -> Self {
-        batch::table
-            .order(batch::id.desc())
-            .first(conn)
-            .expect("error")
+    pub async fn find(db: &PgPool, batch_id: i32) -> Result<Self, UserError> {
+        let batch = sqlx::query_as!(
+            Batch,
+            "SELECT id, beer_id, date FROM batch WHERE id = $1",
+            batch_id
+        )
+        .fetch_one(db)
+        .await?;
+        Ok(batch)
     }
 
-    pub fn find(conn: &mut SqliteConnection, batch_id: i32) -> Self {
-        batch::table
-            .filter(batch::id.eq(batch_id))
-            .first(conn)
-            .expect("error")
+    pub async fn list_for_beer(db: &PgPool, beer_id: i32) -> Result<Vec<Self>, UserError> {
+        let batches = sqlx::query_as!(
+            Batch,
+            "SELECT id, beer_id, date FROM batch WHERE beer_id = $1 ORDER BY date DESC",
+            beer_id
+        )
+        .fetch_all(db)
+        .await?;
+        Ok(batches)
     }
 
-    pub fn all(conn: &mut SqliteConnection) -> Vec<Self> {
-        batch::table
-            .order(batch::date.desc())
-            .get_results(conn)
-            .expect("error")
+    pub async fn update_date(
+        db: &PgPool,
+        batch_id: i32,
+        date: NaiveDate,
+    ) -> Result<Self, UserError> {
+        let trans = db.begin().await?;
+
+        let beer = sqlx::query_as!(
+            Batch,
+            "UPDATE batch SET date = $1 WHERE id = $2 RETURNING id, beer_id, date",
+            date,
+            batch_id,
+        )
+        .fetch_one(db)
+        .await?;
+
+        trans.commit().await?;
+        Ok(beer)
     }
 
-    pub fn list_for_batch(conn: &mut SqliteConnection, beer_id: i32) -> Vec<Self> {
-        batch::table
-            .filter(batch::beer_id.eq(beer_id))
-            .order(batch::date.desc())
-            .get_results(conn)
-            .expect("error")
-    }
+    pub async fn delete(db: &PgPool, batch_id: i32) -> Result<(), UserError> {
+        let trans = db.begin().await?;
 
-    pub fn update_date(conn: &mut SqliteConnection, batch_id: i32, date: NaiveDate) -> Self {
-        diesel::update(batch::table.filter(batch::id.eq(batch_id)))
-            .set(batch::date.eq(date))
-            .execute(conn)
-            .expect("error");
+        sqlx::query_as!(Batch, "DELETE FROM batch WHERE id = $1", batch_id)
+            .execute(db)
+            .await?;
 
-        batch::table
-            .filter(batch::id.eq(batch_id))
-            .first(conn)
-            .expect("error")
-    }
-
-    pub fn delete(conn: &mut SqliteConnection, batch_id: i32) {
-        diesel::delete(batch::table.filter(batch::id.eq(batch_id)))
-            .execute(conn)
-            .expect("error");
+        trans.commit().await?;
+        Ok(())
     }
 }
 
-#[post("/beer.batch.new", format = "json", data = "<new_batch>")]
-pub async fn create_batch(db: Db, new_batch: Json<NewBatch>) -> Json<Batch> {
-    let batch: Batch = db
-        .run(|conn| {
-            Batch::insert(conn, new_batch.0);
-            Batch::find_last(conn)
-        })
-        .await;
+pub async fn new_batch(
+    db: Data<PgPool>,
+    new_batch: Json<NewBatch>,
+) -> Result<HttpResponse, UserError> {
+    let batch = Batch::insert(db.get_ref(), new_batch.0).await?;
     info!("{:?}", batch);
-    Json(batch)
+    Ok(HttpResponse::Ok().json(batch))
 }
 
-#[post("/beer.batch.list", format = "json", data = "<new_batch>")]
-pub async fn list_batches(db: Db, new_batch: Json<NewBatch>) -> Json<Vec<Batch>> {
-    let batches: Vec<Batch> = db
-        .run(move |conn| Batch::list_for_batch(conn, new_batch.0.beer_id))
-        .await;
-
+pub async fn list_batches(
+    db: Data<PgPool>,
+    new_batch: Json<NewBatch>,
+) -> Result<HttpResponse, UserError> {
+    let batches = Batch::list_for_beer(db.get_ref(), new_batch.0.beer_id).await?;
     info!("{:?}", batches);
-    Json(batches)
+    Ok(HttpResponse::Ok().json(batches))
 }
 
-#[post("/beer.batch.date.update", format = "json", data = "<batch_update>")]
-pub async fn update_batch_date(db: Db, batch_update: Json<BatchUpdate>) -> Json<Batch> {
+pub async fn update_batch_date(
+    db: Data<PgPool>,
+    batch_update: Json<BatchUpdate>,
+) -> Result<HttpResponse, UserError> {
     let batch_id = batch_update.0.batch_id;
 
-    let batch: Batch = db
-        .run(move |conn| {
-            if let Some(date) = batch_update.0.date {
-                Batch::update_date(conn, batch_id, date)
-            } else {
-                Batch::find(conn, batch_id)
-            }
-        })
-        .await;
-
+    let db = db.get_ref();
+    let batch = if let Some(date) = batch_update.0.date {
+        Batch::update_date(db, batch_id, date).await?
+    } else {
+        Batch::find(db, batch_id).await?
+    };
     info!("{:?}", batch);
-    Json(batch)
+    Ok(HttpResponse::Ok().json(batch))
 }
 
-#[post("/beer.batch.date.delete", format = "json", data = "<batch_update>")]
-pub async fn delete_batch(db: Db, batch_update: Json<BatchUpdate>) {
+pub async fn delete_batch(
+    db: Data<PgPool>,
+    batch_update: Json<BatchUpdate>,
+) -> Result<HttpResponse, UserError> {
     let batch_id = batch_update.0.batch_id;
-
-    db.run(move |conn| {
-        Batch::delete(conn, batch_id);
-    })
-    .await;
+    Batch::delete(db.get_ref(), batch_id).await?;
+    Ok(HttpResponse::NoContent().finish())
 }

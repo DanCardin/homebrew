@@ -13,16 +13,17 @@ name = "homebrew-server"
 path = "src/server/main.rs"
 
 [dependencies]
-rocket = { git = "https://github.com/SergioBenitez/Rocket" }
 lazy_static = "*"
 serde = { version = "*", features = ["derive"] }
 maplit = "*"
-diesel = { version = "*", features = ["chrono"] }
-diesel_migrations = "*"
 log = "*"
 chrono = { version = "*", features = ["serde"] }
-
-[dependencies.rocket_contrib]
-git = "https://github.com/SergioBenitez/Rocket"
-default-features = false
-features = ["json", "diesel_sqlite_pool"]
+actix-web = "3.0.2"
+actix-rt = "1.1.1"
+sqlx = { version = "0.4.0-beta.1", default-features = false, features = [ "runtime-tokio", "macros", "postgres", "uuid", "chrono", "migrate", "offline"] }
+config = "0.10.1"
+json = "0.12.4"
+derive_more = "0.99.10"
+anyhow = "1.0.32"
+listenfd = "0.3.3"
+env_logger = "0.7.1"

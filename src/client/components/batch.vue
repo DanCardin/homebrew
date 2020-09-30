@@ -36,6 +36,7 @@ export default {
   },
   setup(props) {
     const dateInput: ref<HTMLInputElement> = ref(null);
+    const date = ref(props.batch.date);
     const editing = ref(false);
     const expanded = ref(false);
     const caretDirection = computed(() =>
@@ -43,11 +44,11 @@ export default {
     );
 
     async function changeDate() {
-      if (props.date) {
+      if (date.value) {
         await beerStore.updateBatchDate(
           props.beerId,
           props.batch.id,
-          props.date.value
+          date.value
         );
       }
       editing.value = false;
@@ -66,7 +67,7 @@ export default {
       await beerStore.getBatches(props.beerId);
     }
     return {
-      date: props.batch.date,
+      date,
       dateInput,
       expanded,
       editing,

@@ -101,6 +101,9 @@ interface Color {
   color: string;
 }
 export default {
+  props: {
+    batchId: Number,
+  },
   setup() {
     const targetOG = ref("1");
     const actualOG = ref("1");
@@ -147,9 +150,9 @@ export default {
       actualSRMHex.color = color;
     };
 
-    async function saveMeasurement(key, value) {
+    const saveMeasurement = async (key, value) => {
       console.log(key, value);
-    }
+    };
     return {
       actualSRMInput,
       targetSRMInput,

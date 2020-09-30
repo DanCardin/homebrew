@@ -59,7 +59,7 @@ export class BeerStore extends Store<Beers> {
 
   public async deleteBatch(batchId: number) {
     const payload = { batchId };
-    await requestStore.post("/api/beer.batch.date.delete", payload);
+    await requestStore.post("/api/beer.batch.delete", payload);
   }
 }
 

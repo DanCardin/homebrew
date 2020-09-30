@@ -1,72 +1,63 @@
-use homebrew::srm::SRM_TO_HEX;
-use log;
-use rocket::{fairing::AdHoc, ignite, launch, post, routes, FromForm, Rocket};
-use rocket_contrib::json::Json;
-use serde::{Deserialize, Serialize};
+use actix_web::middleware::Logger;
+use actix_web::{get, web, App, HttpServer, Responder};
+use listenfd::ListenFd;
+use sqlx::postgres::PgPool;
 
-#[macro_use]
-extern crate diesel;
-#[macro_use]
-extern crate diesel_migrations;
-
+pub mod config;
+pub mod error;
 pub mod routes;
-pub mod schema;
 
-#[rocket_contrib::database("sqlite")]
-pub struct Db(diesel::SqliteConnection);
-
-#[derive(FromForm, Deserialize)]
-struct SrmRequest {
-    value: u8,
+#[get("/{id}/{name}/index.html")]
+async fn index(web::Path((id, name)): web::Path<(u32, String)>) -> impl Responder {
+    format!("Hello {}! id:{}", name, id)
 }
 
-#[derive(Serialize)]
-struct SrmResponse {
-    value: String,
-}
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "actix_web=info");
+    env_logger::init();
 
-#[post("/srm.convert", format = "json", data = "<srm>")]
-fn srm_convert(srm: Json<SrmRequest>) -> Json<SrmResponse> {
-    Json(SrmResponse {
-        value: SRM_TO_HEX.get(&srm.value).unwrap_or(&"#000000").to_string(),
+    let configuration = config::get_config().expect("Failed to read configuration.");
+
+    let mut listenfd = ListenFd::from_env();
+    let connection = PgPool::connect(&configuration.database.connection_string())
+        .await
+        .expect("Failed to connect to Postgres.");
+
+    let connection = web::Data::new(connection);
+    let mut server = HttpServer::new(move || {
+        App::new()
+            .wrap(Logger::default())
+            .wrap(Logger::new("%a %{User-Agent}i"))
+            .app_data(connection.clone())
+            .route("/health", web::get().to(routes::check_health))
+            .route("/beer.get", web::post().to(routes::beer::get_beer))
+            .route("/beer.list", web::post().to(routes::beer::list_beers))
+            .route("/beer.new", web::post().to(routes::beer::new_beer))
+            .route("/beer.update", web::post().to(routes::beer::update_beer))
+            .route("/beer.batch.new", web::post().to(routes::batch::new_batch))
+            .route(
+                "/beer.batch.list",
+                web::post().to(routes::batch::list_batches),
+            )
+            .route(
+                "/beer.batch.date.update",
+                web::post().to(routes::batch::update_batch_date),
+            )
+            .route(
+                "/beer.batch.delete",
+                web::post().to(routes::batch::delete_batch),
+            )
     })
-}
+    .workers(4);
 
-// This macro from `diesel_migrations` defines an `embedded_migrations` module
-// containing a function named `run`.
-embed_migrations!();
+    server = match listenfd.take_tcp_listener(0)? {
+        Some(listener) => server.listen(listener)?,
+        None => {
+            let port = 8000;
+            server.bind(format!("127.0.0.1:{}", port))?
+        }
+    };
 
-async fn run_migrations(mut rocket: Rocket) -> Result<Rocket, Rocket> {
-    Db::get_one(rocket.inspect().await)
-        .await
-        .expect("database connection")
-        .run(|c| match embedded_migrations::run(c) {
-            Ok(()) => Ok(rocket),
-            Err(e) => {
-                log::error!("Failed to run database migrations: {:?}", e);
-                Err(rocket)
-            }
-        })
-        .await
-}
-
-#[launch]
-fn configure() -> Rocket {
-    ignite()
-        .attach(Db::fairing())
-        .attach(AdHoc::on_attach("Database Migrations", run_migrations))
-        .mount(
-            "/",
-            routes![
-                srm_convert,
-                routes::beer::get_beer,
-                routes::beer::list_beers,
-                routes::beer::new_beer,
-                routes::beer::update_beer,
-                routes::batch::create_batch,
-                routes::batch::delete_batch,
-                routes::batch::list_batches,
-                routes::batch::update_batch_date,
-            ],
-        )
+    server.run().await
 }
