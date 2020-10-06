@@ -1,21 +1,20 @@
-use actix_web::middleware::Logger;
-use actix_web::{get, web, App, HttpServer, Responder};
+use actix_web::{web, App, HttpServer};
 use listenfd::ListenFd;
 use sqlx::postgres::PgPool;
+use tracing_actix_web::TracingLogger;
 
 pub mod config;
 pub mod error;
 pub mod routes;
-
-#[get("/{id}/{name}/index.html")]
-async fn index(web::Path((id, name)): web::Path<(u32, String)>) -> impl Responder {
-    format!("Hello {}! id:{}", name, id)
-}
+pub mod telemetry;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    std::env::set_var("RUST_LOG", "actix_web=info");
-    env_logger::init();
+    std::env::set_var("RUST_LOG", "info");
+    std::env::set_var("RUST_BACKTRACE", "1");
+
+    let subscriber = telemetry::get_subscriber("info".into());
+    telemetry::init_subscriber(subscriber);
 
     let configuration = config::get_config().expect("Failed to read configuration.");
 
@@ -27,10 +26,17 @@ async fn main() -> std::io::Result<()> {
     let connection = web::Data::new(connection);
     let mut server = HttpServer::new(move || {
         App::new()
-            .wrap(Logger::default())
-            .wrap(Logger::new("%a %{User-Agent}i"))
+            .wrap(TracingLogger)
             .app_data(connection.clone())
             .route("/health", web::get().to(routes::check_health))
+            .route(
+                "/measurement.abv.calculate",
+                web::post().to(routes::measurement::abv::calculate_abv),
+            )
+            .route(
+                "/measurement.srm.to_hex",
+                web::post().to(routes::measurement::srm::to_hex),
+            )
             .route("/beer.get", web::post().to(routes::beer::get_beer))
             .route("/beer.list", web::post().to(routes::beer::list_beers))
             .route("/beer.new", web::post().to(routes::beer::new_beer))
@@ -41,12 +47,20 @@ async fn main() -> std::io::Result<()> {
                 web::post().to(routes::batch::list_batches),
             )
             .route(
-                "/beer.batch.date.update",
-                web::post().to(routes::batch::update_batch_date),
+                "/beer.batch.get",
+                web::post().to(routes::batch::get_batch_info),
             )
             .route(
                 "/beer.batch.delete",
                 web::post().to(routes::batch::delete_batch),
+            )
+            .route(
+                "/beer.batch.date.update",
+                web::post().to(routes::batch::update_batch_date),
+            )
+            .route(
+                "/beer.batch.measurement.update",
+                web::post().to(routes::batch::update_batch_measurement),
             )
     })
     .workers(4);

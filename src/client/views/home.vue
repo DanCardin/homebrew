@@ -15,22 +15,27 @@ div
             span
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import router from "/@client/router";
 import { beerStore } from "/@client/store/beer";
 import { onMounted } from "vue";
 
-export const beers = beerStore.getState().beers;
+export default {
+  setup() {
+    const beers = beerStore.getState().beers;
 
-onMounted(async () => {
-  await beerStore.getBeers();
-});
+    onMounted(async () => {
+      await beerStore.getBeers();
+    });
 
-export async function newBeer() {
-  const beer = await beerStore.newBeer();
-  router.push({ name: "beer", params: { beerId: beer.id } });
-}
-export function selectBeer(id: number) {
-  router.push({ name: "beer", params: { beerId: id } });
-}
+    async function newBeer() {
+      const beer = await beerStore.newBeer();
+      router.push({ name: "beer", params: { beerId: beer.id } });
+    }
+    function selectBeer(id: number) {
+      router.push({ name: "beer", params: { beerId: id } });
+    }
+    return { newBeer, selectBeer, beers };
+  },
+};
 </script>

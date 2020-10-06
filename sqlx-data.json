@@ -1,5 +1,70 @@
 {
   "db": "PostgreSQL",
+  "00b34d3a17e508c6b90c456a8a966d0a7d9161d8a9f699d35e135fb17c8489c7": {
+    "query": "\n            SELECT batch_id, name, value\n            FROM batch_measurement\n            WHERE batch_id = $1\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "batch_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "name",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 2,
+          "name": "value",
+          "type_info": "Numeric"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "0ed88c3c123d076fd71d2025f0daccd04c0d974b480bba13b589191f45a93463": {
+    "query": "UPDATE batch SET date = $1 WHERE id = $2 RETURNING id, beer_id, date",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "beer_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 2,
+          "name": "date",
+          "type_info": "Date"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Date",
+          "Int4"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
   "1af8a601ec607f3261fd9db9421c5b1f6dfb52be6c30f87f4192d4f8b9906059": {
     "query": "INSERT INTO beer DEFAULT VALUES RETURNING id, name, style",
     "describe": {
@@ -22,6 +87,38 @@
       ],
       "parameters": {
         "Left": []
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "4a55633eb441d3e83c9adc1932398815e89322690c7471008f5811a1b2588c0b": {
+    "query": "SELECT id, beer_id, date FROM batch WHERE beer_id = $1 ORDER BY date DESC",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "beer_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 2,
+          "name": "date",
+          "type_info": "Date"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
       },
       "nullable": [
         false,
@@ -64,6 +161,38 @@
       ]
     }
   },
+  "9f0c93101c3271eec080dd9581afaddbc5db8de445ed3e5f7e92aafef82a7592": {
+    "query": "INSERT INTO batch (beer_id) VALUES ($1) RETURNING id, beer_id, date",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "beer_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 2,
+          "name": "date",
+          "type_info": "Date"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
   "a9cd9fed1c4ea6aabe0bfb2d082ddf6f34984c4c931ee87a1c4f033f6273fe2a": {
     "query": "SELECT id, name, style FROM beer WHERE id = $1 ORDER BY id DESC",
     "describe": {
@@ -94,6 +223,84 @@
         false,
         false
       ]
+    }
+  },
+  "cfcab4953d3b3c3251dae89105726bd03ec67b88d4c2cdbb38c49694cb737ee0": {
+    "query": "\n            INSERT INTO batch_measurement (batch_id, name, value)\n            VALUES ($1, $2, $3)\n            ON CONFLICT\n            ON CONSTRAINT batch_measurement_pkey\n            DO UPDATE SET value = $3\n            RETURNING batch_id, name, value\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "batch_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "name",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 2,
+          "name": "value",
+          "type_info": "Numeric"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Varchar",
+          "Numeric"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "d71b230c2280bcda41c96b41a845cce9eaa14d7b9c944dfa15bafc6068da98f2": {
+    "query": "SELECT id, beer_id, date FROM batch WHERE id = $1",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "beer_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 2,
+          "name": "date",
+          "type_info": "Date"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "f4971ed3ab8636864bfd7420969682565b81a8f7d592506490f25e3022ee9885": {
+    "query": "DELETE FROM batch WHERE id = $1",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      },
+      "nullable": []
     }
   },
   "fbd673f5a7a9f94dd70006f25382f1a85dfddc82c1280b8b78d43b448942768d": {

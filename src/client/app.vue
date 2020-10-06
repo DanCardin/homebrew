@@ -13,13 +13,12 @@
 router-view
 </template>
 <script lang="ts">
-import { requestStore } from "/@client/store/request";
-import { computed } from "vue";
+import { useRequests } from "/@client/store/request";
 
 export default {
   setup() {
-    const pendingRequests = requestStore.getState().pendingRequests;
-    const requestPending = computed(() => pendingRequests.size);
+    const requests = useRequests();
+    const requestPending = requests.pending;
 
     return { requestPending };
   },

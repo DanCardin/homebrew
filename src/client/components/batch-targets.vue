@@ -13,50 +13,37 @@ table.col.table.table-bordered.mx-0
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1.specific-gravity
-            label.mb-0(for="targetOGInput") Target
-            input#targetOGInput.form-control(
-              @blur="saveMeasurement('targetOG', targetOG)",
-              v-model.number="targetOG",
-              type="number",
-              min="0",
-              max="2",
-              step=".001"
+            gravity-input(
+              @change.lazy="saveMeasurement('targetOG', $event.target.value)",
+              :value="batchInfo.measurements.targetOG",
+              label="Target"
             )
           .mx-1.specific-gravity
-            label.mb-0(for="actualOGInput") Actual
-            input#actualOGInput.form-control(
-              v-model.number="actualOG",
-              type="number",
-              min="0",
-              max="2",
-              step=".001"
+            gravity-input(
+              @change.lazy="saveMeasurement('actualOG', $event.target.value)",
+              :value="batchInfo.measurements.actualOG",
+              label="Actual"
             )
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1.specific-gravity
-            label.mb-0(for="targetFGInput") Target
-            input#targeFGtInput.form-control(
-              v-model.number="targetFG",
-              type="number",
-              min="0",
-              max="2",
-              step=".001"
+            gravity-input(
+              @change.lazy="saveMeasurement('targetFG', $event.target.value)",
+              :value="batchInfo.measurements.targetFG",
+              label="Target"
             )
           .mx-1.specific-gravity
-            label.mb-0(for="actualFGInput") Actual
-            input#actualFGInput.form-control
+            gravity-input(
+              @change.lazy="saveMeasurement('actualFG', $event.target.value)",
+              :value="batchInfo.measurements.actualFG",
+              label="Actual"
+            )
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1.abv
-            label.mb-0(for="targetABVInput") Target
-            input#targetABVInput.form-control(
-              ,
-              readonly,
-              v-bind:value="targetABV"
-            )
+            abv-input(:value="abvInfo.target.abv", label="Target")
           .mx-1.abv
-            label.mb-0(for="actualABVInput") Actual
-            input#actualABVInput.form-control
+            abv-input(:value="abvInfo.actual.abv", label="Actual")
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1
@@ -93,40 +80,38 @@ table.col.table.table-bordered.mx-0
             input#actualVolumneInput.form-control
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import AbvInput from "/@client/components/abvInput.vue";
+import GravityInput from "/@client/components/gravityInput.vue";
+import { createBatchStore } from "/@client/store/batch";
+import { useRequests } from "/@client/store/request";
 import axios from "axios";
-import { computed, reactive, ref } from "vue";
+import { reactive, ref } from "vue";
 
 interface Color {
   color: string;
 }
 export default {
+  components: { AbvInput, GravityInput },
   props: {
     batchId: Number,
   },
-  setup() {
-    const targetOG = ref("1");
+  async setup(props) {
+    const requests = useRequests();
+    const { batchInfo, abvInfo, fetch, saveMeasurement } = createBatchStore(
+      requests,
+      props.batchId
+    );
+    await fetch();
+
     const actualOG = ref("1");
-
-    const targetFG = ref("1");
     const actualFG = ref("1");
-
-    const actualABV = ref("");
-
     const targetIBU = ref("");
     const actualIBU = ref("");
-
     const targetSRM = ref("");
     const actualSRM = ref("");
-
     const targetSRMHex: reactive<Color> = reactive({});
     const actualSRMHex: reactive<Color> = reactive({});
-
-    const targetABV = computed(() => {
-      const og = +targetOG.value;
-      const fg = +targetFG.value;
-      return ((76.08 * (og - fg)) / (1.775 - og)) * (fg / 0.794);
-    });
 
     const targetSRMInput = async () => {
       let color = "#000000";
@@ -138,7 +123,6 @@ export default {
       }
       targetSRMHex.color = color;
     };
-
     const actualSRMInput = async () => {
       let color = "#000000";
       if (actualSRM.value) {
@@ -149,25 +133,19 @@ export default {
       }
       actualSRMHex.color = color;
     };
-
-    const saveMeasurement = async (key, value) => {
-      console.log(key, value);
-    };
     return {
       actualSRMInput,
       targetSRMInput,
-      targetABV,
-      targetOG,
       actualOG,
-      targetFG,
       actualFG,
-      actualABV,
       targetIBU,
       actualIBU,
       targetSRM,
       actualSRM,
       targetSRMHex,
       actualSRMHex,
+      abvInfo,
+      batchInfo,
       saveMeasurement,
     };
   },

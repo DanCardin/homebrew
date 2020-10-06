@@ -214,7 +214,7 @@ div
                 input#targetInput.form-control
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 export default {
   props: {
     beerId: Number,

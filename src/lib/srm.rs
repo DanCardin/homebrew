@@ -1,9 +1,10 @@
-use lazy_static::lazy_static;
 use maplit::hashmap;
+use once_cell::sync::Lazy;
 use std::collections::HashMap;
 
-lazy_static! {
-    pub static ref SRM_TO_HEX: HashMap<u8, &'static str> = hashmap! {
+#[allow(dead_code)]
+pub static SRM_TO_HEX: Lazy<HashMap<u8, &'static str>> = Lazy::new(|| {
+    hashmap! {
         1 => "#FFE699",
         2 => "#FFD878",
         3 => "#FFCA5A",
@@ -44,5 +45,6 @@ lazy_static! {
         38 => "#3B0607",
         39 => "#3A070B",
         40 => "#36080A",
-    };
-}
+
+    }
+});

@@ -1,5 +1,5 @@
 import { Store } from "/@client/store";
-import { requestStore } from "/@client/store/request";
+import { state } from "/@client/store/request";
 
 interface Beer {
   id: number;
@@ -7,8 +7,15 @@ interface Beer {
   style: string | undefined;
 }
 
+interface BatchMeasurement {
+  name: string;
+  value: number;
+  type: string;
+}
+
 interface Beers extends Object {
   beers: Beer[];
+  batches: [];
 }
 
 export class BeerStore extends Store<Beers> {
@@ -20,32 +27,32 @@ export class BeerStore extends Store<Beers> {
   }
 
   public async getBeers() {
-    const { data } = await requestStore.post<Beer[]>("/api/beer.list", {});
+    const { data } = await state.post<Beer[]>("/api/beer.list", {});
     this.state.beers.splice(0, this.state.beers.length, ...data);
   }
 
   public async getBeer(id: number) {
-    const { data } = await requestStore.post<Beer>("/api/beer.get", { id });
+    const { data } = await state.post<Beer>("/api/beer.get", { id });
     return data;
   }
 
   public async newBeer() {
-    const { data } = await requestStore.post("/api/beer.new", {});
+    const { data } = await state.post("/api/beer.new", {});
     return data;
   }
 
   public async update(beer: Beer) {
-    const { data } = await requestStore.post("/api/beer.update", beer);
+    const { data } = await state.post("/api/beer.update", beer);
     return data;
   }
 
   public async createBatch(beerId: number) {
-    await requestStore.post("/api/beer.batch.new", { beerId });
+    await state.post("/api/beer.batch.new", { beerId });
     await this.getBatches(beerId);
   }
 
   public async getBatches(beerId: number) {
-    const { data } = await requestStore.post("/api/beer.batch.list", {
+    const { data } = await state.post("/api/beer.batch.list", {
       beerId,
     });
     this.state.batches.splice(0, this.state.batches.length, ...data);
@@ -53,13 +60,13 @@ export class BeerStore extends Store<Beers> {
 
   public async updateBatchDate(beerId: number, batchId: number, date: string) {
     const payload = { batchId, date };
-    await requestStore.post("/api/beer.batch.date.update", payload);
+    await state.post("/api/beer.batch.date.update", payload);
     await this.getBatches(beerId);
   }
 
   public async deleteBatch(batchId: number) {
     const payload = { batchId };
-    await requestStore.post("/api/beer.batch.delete", payload);
+    await state.post("/api/beer.batch.delete", payload);
   }
 }
 

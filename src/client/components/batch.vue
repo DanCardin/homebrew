@@ -17,7 +17,8 @@
         fa(:icon="caretDirection", :key="caretDirection", size="lg")
 
     .text-dark(v-if="expanded")
-      batch-targets(:batchId="batch.id")
+      suspense
+        batch-targets(:batchId="batch.id")
       button.btn.btn-danger.float-right.m-2(
         @click="deleteBatch",
         type="button"
