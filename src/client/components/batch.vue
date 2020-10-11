@@ -18,7 +18,9 @@
 
     .text-dark(v-if="expanded")
       suspense
-        batch-targets(:batchId="batch.id")
+        batch-targets.mx-0(:batchId="batch.id")
+      suspense
+        batch-ingredients.mx-0(:batchId="batch.id")
       button.btn.btn-danger.float-right.m-2(
         @click="deleteBatch",
         type="button"
@@ -26,11 +28,12 @@
 </template>
 
 <script lang="ts">
+import BatchIngredients from "/@client/components/batch-ingredients.vue";
 import BatchTargets from "/@client/components/batch-targets.vue";
 import { beerStore } from "/@client/store/beer";
 import { computed, ref } from "vue";
 export default {
-  components: { BatchTargets },
+  components: { BatchTargets, BatchIngredients },
   props: {
     beerId: Number,
     batch: Object,

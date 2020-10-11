@@ -1,12 +1,12 @@
 <template lang="pug">
 label.mb-0 {{ label }}
-input.form-control(
+input.volume.form-control(
   v-model="localValue",
   v-bind="$attrs",
   type="number",
   min="0",
-  max="2",
-  step=".001"
+  max="100",
+  step=".25"
 )
 </template>
 
@@ -27,7 +27,7 @@ export default {
   emits: ["update:value"],
   setup(props, context) {
     const localValue = computed({
-      get: () => props.value.toFixed(3),
+      get: () => props.value.toFixed(2),
       set: (value) => context.emit("update:value", value),
     });
     return {
@@ -36,3 +36,9 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+.volume {
+  min-width: 2.6rem;
+}
+</style>

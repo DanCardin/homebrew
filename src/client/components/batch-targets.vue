@@ -1,5 +1,5 @@
 <template lang="pug">
-table.col.table.table-bordered.mx-0
+table.col.table.table-bordered
   thead
     tr
       th OG
@@ -12,38 +12,38 @@ table.col.table.table-bordered.mx-0
     tr.text-uppercase
       td.p-1
         .d-flex.text-sm.text-secondary
-          .mx-1.specific-gravity
-            gravity-input(
+          .mx-1
+            input-gravity(
               @change.lazy="saveMeasurement('targetOG', $event.target.value)",
               :value="batchInfo.measurements.targetOG",
               label="Target"
             )
-          .mx-1.specific-gravity
-            gravity-input(
+          .mx-1
+            input-gravity(
               @change.lazy="saveMeasurement('actualOG', $event.target.value)",
               :value="batchInfo.measurements.actualOG",
               label="Actual"
             )
       td.p-1
         .d-flex.text-sm.text-secondary
-          .mx-1.specific-gravity
-            gravity-input(
+          .mx-1
+            input-gravity(
               @change.lazy="saveMeasurement('targetFG', $event.target.value)",
               :value="batchInfo.measurements.targetFG",
               label="Target"
             )
-          .mx-1.specific-gravity
-            gravity-input(
+          .mx-1
+            input-gravity(
               @change.lazy="saveMeasurement('actualFG', $event.target.value)",
               :value="batchInfo.measurements.actualFG",
               label="Actual"
             )
       td.p-1
         .d-flex.text-sm.text-secondary
-          .mx-1.abv
-            abv-input(:value="abvInfo.target.abv", label="Target")
-          .mx-1.abv
-            abv-input(:value="abvInfo.actual.abv", label="Actual")
+          .mx-1
+            input-abv(:value="abvInfo.target.abv", label="Target")
+          .mx-1
+            input-abv(:value="abvInfo.actual.abv", label="Actual")
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1
@@ -73,16 +73,23 @@ table.col.table.table-bordered.mx-0
       td.p-1
         .d-flex.text-sm.text-secondary
           .mx-1
-            label.mb-0(for="targetVolumeInput") Target
-            input#targetVolumeInput.form-control
+            input-volume(
+              @change.lazy="saveMeasurement('targetVolume', $event.target.value)",
+              :value="batchInfo.measurements.targetVolume",
+              label="Target"
+            )
           .mx-1
-            label.mb-0(for="actualVolumeInput") Actual
-            input#actualVolumneInput.form-control
+            input-volume(
+              @change.lazy="saveMeasurement('actualVolume', $event.target.value)",
+              :value="batchInfo.measurements.actualVolume",
+              label="Actual"
+            )
 </template>
 
 <script lang="ts">
-import AbvInput from "/@client/components/abvInput.vue";
-import GravityInput from "/@client/components/gravityInput.vue";
+import InputAbv from "/@client/components/input-abv.vue";
+import InputGravity from "/@client/components/input-gravity.vue";
+import InputVolume from "/@client/components/input-volume.vue";
 import { createBatchStore } from "/@client/store/batch";
 import { useRequests } from "/@client/store/request";
 import axios from "axios";
@@ -92,7 +99,7 @@ interface Color {
   color: string;
 }
 export default {
-  components: { AbvInput, GravityInput },
+  components: { InputAbv, InputGravity, InputVolume },
   props: {
     batchId: Number,
   },
@@ -155,12 +162,6 @@ export default {
 <style scoped lang="scss">
 .text-sm {
   font-size: 0.6em;
-}
-.specific-gravity {
-  min-width: 4.9rem;
-}
-.abv {
-  min-width: 3.5rem;
 }
 .ibu {
   min-width: 2.6rem;

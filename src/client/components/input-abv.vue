@@ -1,6 +1,6 @@
 <template lang="pug">
 label.mb-0 {{ label }}
-input.form-control(
+input.abv.form-control(
   :value="localValue",
   v-bind="$attrs",
   readonly,
@@ -37,3 +37,9 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+.abv {
+  min-width: 3.5rem;
+}
+</style>

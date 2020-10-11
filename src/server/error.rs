@@ -1,30 +1,75 @@
-use actix_web::{dev::HttpResponseBuilder, error, http::header, http::StatusCode, HttpResponse};
+use actix_multipart::MultipartError;
+use actix_web::{dev::HttpResponseBuilder, error, http::StatusCode, HttpResponse};
 use derive_more::{Display, Error};
+use serde::Serialize;
+use std::borrow::Cow;
+
+#[derive(Serialize)]
+struct ErrorResponse {
+    code: u16,
+    error: String,
+    message: String,
+}
 
 #[derive(Debug, Display, Error)]
 pub enum ApiError {
-    #[display(fmt = "Validation error on field: {}", field)]
-    ValidationError { field: String },
+    #[display(fmt = "Failed to process the request: {}", reason)]
+    BadRequest { reason: Cow<'static, str> },
 
-    #[display(fmt = "Failed to process the request: {}", field)]
-    Unprocessable { field: String },
-
-    #[display(fmt = "An internal error occurred: {}", field)]
-    InternalError { field: String },
+    #[display(fmt = "An internal error occurred: {}", reason)]
+    InternalError { reason: Cow<'static, str> },
 }
 
-impl error::ResponseError for ApiError {
-    fn error_response(&self) -> HttpResponse {
-        HttpResponseBuilder::new(self.status_code())
-            .set_header(header::CONTENT_TYPE, "text/html; charset=utf-8")
-            .body(self.to_string())
+impl ApiError {
+    pub fn error<S>(reason: S) -> Self
+    where
+        S: Into<Cow<'static, str>>,
+    {
+        Self::BadRequest {
+            reason: reason.into(),
+        }
     }
+
+    pub fn internal_error<S>(reason: S) -> Self
+    where
+        S: Into<Cow<'static, str>>,
+    {
+        Self::InternalError {
+            reason: reason.into(),
+        }
+    }
+
+    pub fn name(&self) -> String {
+        match self {
+            Self::BadRequest { .. } => "Bad Request".to_string(),
+            Self::InternalError { .. } => "Internal Error".to_string(),
+        }
+    }
+
+    pub fn reason(&self) -> String {
+        match self {
+            Self::BadRequest { reason } => reason.to_string(),
+            Self::InternalError { reason } => reason.to_string(),
+        }
+    }
+}
+
+impl<'a> error::ResponseError for ApiError {
     fn status_code(&self) -> StatusCode {
         match *self {
-            ApiError::ValidationError { .. } => StatusCode::BAD_REQUEST,
-            ApiError::Unprocessable { .. } => StatusCode::BAD_REQUEST,
+            ApiError::BadRequest { .. } => StatusCode::BAD_REQUEST,
             ApiError::InternalError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
         }
+    }
+
+    fn error_response(&self) -> HttpResponse {
+        let status_code = self.status_code();
+        let error_response = ErrorResponse {
+            code: status_code.as_u16(),
+            message: self.reason(),
+            error: self.name(),
+        };
+        HttpResponseBuilder::new(self.status_code()).json(error_response)
     }
 }
 
@@ -32,8 +77,15 @@ impl From<sqlx::Error> for ApiError {
     fn from(err: sqlx::Error) -> Self {
         let message = err.to_string();
         match err {
-            sqlx::Error::RowNotFound => ApiError::Unprocessable { field: message },
-            _ => ApiError::InternalError { field: message },
+            sqlx::Error::RowNotFound => ApiError::error(message),
+            _ => ApiError::internal_error(message),
         }
+    }
+}
+
+impl From<MultipartError> for ApiError {
+    fn from(err: MultipartError) -> Self {
+        let message = err.to_string();
+        ApiError::error(message)
     }
 }

@@ -19,11 +19,18 @@ const createState = () => {
     return state.pendingRequests.delete(key);
   }
 
-  async function post<T>(url: string, body: unknown): T {
+  async function post<T>(
+    url: string,
+    body: unknown,
+    options: Record<string, unknown>
+  ): T {
     set(url);
-    const response = await axios.post(url, body);
-    setTimeout(() => unset(url), 1000);
-    return response;
+    try {
+      const response = await axios.post(url, body, options);
+      return response;
+    } finally {
+      setTimeout(() => unset(url), 1000);
+    }
   }
 
   return {

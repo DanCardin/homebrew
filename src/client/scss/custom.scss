@@ -1,0 +1,21 @@
+@import "bootstrap/scss/bootstrap.scss";
+
+@import "./_variables.scss";
+
+.trash {
+  @extend .btn;
+  @extend .btn-link;
+  color: $gray-400;
+  &:hover {
+    color: $danger;
+  }
+}
+
+.create {
+  @extend .btn;
+  @extend .btn-link;
+  color: $gray-400;
+  &:hover {
+    color: $success;
+  }
+}

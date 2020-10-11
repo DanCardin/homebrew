@@ -1,67 +1,6 @@
 <template lang="pug">
 div
   .card.m-2.border-secondary
-    .card-header.text-uppercase Ingredients
-    .card-body.text-left.text-secondary
-      .row
-        .col-5
-          table.table.table-bordered
-            thead
-              tr
-                th(width="75%") Grain
-                th Weight
-            tbody
-              tr
-                td
-                  input.form-control
-                td
-                  input.form-control
-        .col-7
-          table.table.table-bordered
-            thead
-              tr
-                th(width="65%")
-                  span Hops
-                  span.text-sm.text-secondary &nbsp;(Form/AA)
-                th(width="20%") Time
-                th(width="15%") Weight
-            tbody
-              tr
-                td
-                  input.form-control
-                td
-                  input.form-control
-                td
-                  input.form-control
-      .row
-        .col-5
-          table.table.table-bordered
-            thead
-              tr
-                th(width="75%")
-                  span H20 Treatments
-                th Weight
-            tbody
-              tr
-                td
-                  input.form-control
-                td
-                  input.form-control
-        .col-7
-          table.table.table-bordered
-            thead
-              tr
-                th(width="75%") Other Ingredients
-                th Weight/Amt
-            tbody
-              tr
-                td
-                  input.form-control
-                td
-                  input.form-control
-    .card-footer
-
-  .card.m-2.border-secondary
     .card-header.text-uppercase Brew Milestones
     .card-body.text-secondary.p-0
       table.table.table-bordered.mb-0

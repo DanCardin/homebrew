@@ -1,5 +1,5 @@
 import "/@client/registerServiceWorker";
-import "bootstrap/scss/bootstrap.scss";
+import "/@client/scss/custom.scss";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -8,6 +8,7 @@ import {
   faCaretUp,
   faCog,
   faPlus,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import App from "/@client/app.vue";
@@ -20,6 +21,7 @@ library.add(faCaretDown);
 library.add(faCaretUp);
 library.add(faCog);
 library.add(faPlus);
+library.add(faTrash);
 
 createApp(App)
   .use(router)

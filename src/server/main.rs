@@ -62,6 +62,31 @@ async fn main() -> std::io::Result<()> {
                 "/beer.batch.measurement.update",
                 web::post().to(routes::batch::update_batch_measurement),
             )
+            .route(
+                "/beer.batch.ingredient.new",
+                web::post().to(routes::batch::ingredient::new),
+            )
+            .route(
+                "/beer.batch.ingredient.list",
+                web::post().to(routes::batch::ingredient::list),
+            )
+            .route(
+                "/beer.batch.ingredient.delete",
+                web::post().to(routes::batch::ingredient::delete),
+            )
+            .route("/fermentable.new", web::post().to(routes::fermentable::new))
+            .route(
+                "/fermentable.import",
+                web::post().to(routes::fermentable::import),
+            )
+            .route(
+                "/fermentable.delete",
+                web::post().to(routes::fermentable::delete),
+            )
+            .route(
+                "/fermentable.list",
+                web::post().to(routes::fermentable::list),
+            )
     })
     .workers(4);
 

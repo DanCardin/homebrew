@@ -3,15 +3,19 @@
   router-link.navbar-brand(to="/")
     img.m-2(src="favicon.svg", width="32", height="32", loading="lazy")
     span.align-middle Homebrew
-  fa.justify-content-end.text-dark.m-2(
-    v-if="requestPending",
-    icon="cog",
-    size="lg",
-    spin
-  )
+  .justify-content-end
+    router-link.m-2(to="/fermentables")
+      span.m-2.wheat(width="32", height="32")
+    fa.text-dark.m-2(
+      :style="{ opacity: requestPending ? '100%' : '0%' }",
+      icon="cog",
+      size="lg",
+      spin
+    )
 
 router-view
 </template>
+
 <script lang="ts">
 import { useRequests } from "/@client/store/request";
 
@@ -26,11 +30,12 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+.wheat {
+  mask: url("/fermentable.svg");
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  background: rgb(227, 162, 0);
+  mask-size: cover;
 }
 </style>
