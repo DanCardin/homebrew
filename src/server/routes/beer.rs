@@ -19,12 +19,12 @@ pub struct Beer {
     pub style: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct BeerRequest {
     id: i32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct BeerUpdate {
     id: i32,
     name: Option<String>,
@@ -85,6 +85,7 @@ impl Beer {
     }
 }
 
+#[tracing::instrument(skip(db))]
 pub async fn new_beer(db: Data<PgPool>) -> Result<HttpResponse, ApiError> {
     let beer = Beer::insert(db.get_ref()).await?;
     info!("{:?}", beer);
@@ -95,6 +96,7 @@ pub async fn new_beer(db: Data<PgPool>) -> Result<HttpResponse, ApiError> {
     }))
 }
 
+#[tracing::instrument(skip(db))]
 pub async fn get_beer(
     db: Data<PgPool>,
     beer_request: Json<BeerRequest>,
@@ -103,12 +105,14 @@ pub async fn get_beer(
     Ok(HttpResponse::Ok().json(beer))
 }
 
+#[tracing::instrument(skip(db))]
 pub async fn list_beers(db: Data<PgPool>) -> Result<HttpResponse, ApiError> {
     let beers: Vec<Beer> = Beer::all(db.get_ref()).await?;
     info!("{:?}", beers);
     Ok(HttpResponse::Ok().json(beers))
 }
 
+#[tracing::instrument(skip(db))]
 pub async fn update_beer(
     db: Data<PgPool>,
     beer_update: Json<BeerUpdate>,

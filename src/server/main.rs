@@ -29,63 +29,54 @@ async fn main() -> std::io::Result<()> {
             .wrap(TracingLogger)
             .app_data(connection.clone())
             .route("/health", web::get().to(routes::check_health))
-            .route(
-                "/measurement.abv.calculate",
-                web::post().to(routes::measurement::abv::calculate_abv),
+            .service(
+                web::scope("/measurement")
+                    .route(
+                        "abv/calculate",
+                        web::post().to(routes::measurement::abv::calculate_abv),
+                    )
+                    .route(
+                        "srm/to_hex",
+                        web::post().to(routes::measurement::srm::to_hex),
+                    ),
             )
-            .route(
-                "/measurement.srm.to_hex",
-                web::post().to(routes::measurement::srm::to_hex),
+            .service(
+                web::scope("/beer")
+                    .route("get", web::post().to(routes::beer::get_beer))
+                    .route("list", web::post().to(routes::beer::list_beers))
+                    .route("new", web::post().to(routes::beer::new_beer))
+                    .route("update", web::post().to(routes::beer::update_beer))
+                    .service(
+                        web::scope("batch")
+                            .route("new", web::post().to(routes::batch::new_batch))
+                            .route("list", web::post().to(routes::batch::list_batches))
+                            .route("get", web::post().to(routes::batch::get_batch_info))
+                            .route("delete", web::post().to(routes::batch::delete_batch))
+                            .route(
+                                "date/update",
+                                web::post().to(routes::batch::update_batch_date),
+                            )
+                            .route(
+                                "measurement/update",
+                                web::post().to(routes::batch::update_batch_measurement),
+                            )
+                            .service(
+                                web::scope("ingredient")
+                                    .route("new", web::post().to(routes::batch::ingredient::new))
+                                    .route("list", web::post().to(routes::batch::ingredient::list))
+                                    .route(
+                                        "delete",
+                                        web::post().to(routes::batch::ingredient::delete),
+                                    ),
+                            ),
+                    ),
             )
-            .route("/beer.get", web::post().to(routes::beer::get_beer))
-            .route("/beer.list", web::post().to(routes::beer::list_beers))
-            .route("/beer.new", web::post().to(routes::beer::new_beer))
-            .route("/beer.update", web::post().to(routes::beer::update_beer))
-            .route("/beer.batch.new", web::post().to(routes::batch::new_batch))
-            .route(
-                "/beer.batch.list",
-                web::post().to(routes::batch::list_batches),
-            )
-            .route(
-                "/beer.batch.get",
-                web::post().to(routes::batch::get_batch_info),
-            )
-            .route(
-                "/beer.batch.delete",
-                web::post().to(routes::batch::delete_batch),
-            )
-            .route(
-                "/beer.batch.date.update",
-                web::post().to(routes::batch::update_batch_date),
-            )
-            .route(
-                "/beer.batch.measurement.update",
-                web::post().to(routes::batch::update_batch_measurement),
-            )
-            .route(
-                "/beer.batch.ingredient.new",
-                web::post().to(routes::batch::ingredient::new),
-            )
-            .route(
-                "/beer.batch.ingredient.list",
-                web::post().to(routes::batch::ingredient::list),
-            )
-            .route(
-                "/beer.batch.ingredient.delete",
-                web::post().to(routes::batch::ingredient::delete),
-            )
-            .route("/fermentable.new", web::post().to(routes::fermentable::new))
-            .route(
-                "/fermentable.import",
-                web::post().to(routes::fermentable::import),
-            )
-            .route(
-                "/fermentable.delete",
-                web::post().to(routes::fermentable::delete),
-            )
-            .route(
-                "/fermentable.list",
-                web::post().to(routes::fermentable::list),
+            .service(
+                web::scope("/fermentable")
+                    .route("new", web::post().to(routes::fermentable::new))
+                    .route("import", web::post().to(routes::fermentable::import))
+                    .route("delete", web::post().to(routes::fermentable::delete))
+                    .route("list", web::post().to(routes::fermentable::list)),
             )
     })
     .workers(4);

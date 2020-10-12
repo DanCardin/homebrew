@@ -21,14 +21,14 @@ export function createBatchStore(requests, batchId: number) {
   async function calculateAbv(originalGravity: number, finalGravity: number) {
     const payload = { originalGravity, finalGravity };
     const { data } = await requests.post(
-      "/api/measurement.abv.calculate",
+      "/api/measurement/abv/calculate",
       payload
     );
     return data;
   }
 
   async function fetch() {
-    const { data } = await requests.post("/api/beer.batch.get", {
+    const { data } = await requests.post("/api/beer/batch/get", {
       batchId,
     });
     batchInfo.measurements = mapValues(
@@ -50,7 +50,7 @@ export function createBatchStore(requests, batchId: number) {
   }
   async function saveMeasurement(name: string, value: string) {
     const payload = { batchId, name, value: +value };
-    await requests.post("/api/beer.batch.measurement.update", payload);
+    await requests.post("/api/beer/batch/measurement/update", payload);
     await fetch();
   }
   return {
@@ -71,7 +71,7 @@ export function createBatchIngredientStore(requests, batchId: number) {
       kinds = ["grain"];
     }
     for (const kind of kinds) {
-      const { data } = await requests.post("/api/beer.batch.ingredient.list", {
+      const { data } = await requests.post("/api/beer/batch/ingredient/list", {
         batchId,
         kind,
       });
@@ -80,7 +80,7 @@ export function createBatchIngredientStore(requests, batchId: number) {
   }
 
   async function newIngredient(kind: string, unit: string) {
-    await requests.post("/api/beer.batch.ingredient.new", {
+    await requests.post("/api/beer/batch/ingredient/new", {
       batchId,
       kind,
       unit,
@@ -89,7 +89,7 @@ export function createBatchIngredientStore(requests, batchId: number) {
   }
 
   async function deleteIngredient(kind: string, id: number) {
-    await requests.post("/api/beer.batch.ingredient.delete", { id });
+    await requests.post("/api/beer/batch/ingredient/delete", { id });
     await fetchIngredients(kind);
   }
 

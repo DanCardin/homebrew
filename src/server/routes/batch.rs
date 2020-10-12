@@ -10,7 +10,7 @@ use tracing::info;
 
 pub mod ingredient;
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NewBatch {
     pub beer_id: i32,
@@ -194,12 +194,7 @@ pub async fn new_batch(
     Ok(Json(batch))
 }
 
-#[tracing::instrument(
-    skip(db, new_batch),
-    fields(
-        request_id=%uuid::Uuid::new_v4(),
-    )
-)]
+#[tracing::instrument(skip(db))]
 pub async fn list_batches(
     db: Data<PgPool>,
     new_batch: Json<NewBatch>,
@@ -234,12 +229,7 @@ pub async fn delete_batch(
     Ok(Json(()))
 }
 
-#[tracing::instrument(
-    skip(db, measurement),
-    fields(
-        request_id=%uuid::Uuid::new_v4(),
-    )
-)]
+#[tracing::instrument(skip(db))]
 pub async fn update_batch_measurement(
     db: Data<PgPool>,
     measurement: Json<Measurement>,
@@ -254,12 +244,7 @@ pub async fn update_batch_measurement(
     Ok(Json(measurement))
 }
 
-#[tracing::instrument(
-    skip(db, batch_id),
-    fields(
-        request_id=%uuid::Uuid::new_v4(),
-    )
-)]
+#[tracing::instrument(skip(db))]
 pub async fn get_batch_info(
     db: Data<PgPool>,
     batch_id: Json<BatchId>,

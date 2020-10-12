@@ -16,12 +16,12 @@ export function fermentablesStore() {
   const requests = useRequests();
 
   async function fetch() {
-    const { data } = await requests.post("/api/fermentable.list", {});
+    const { data } = await requests.post("/api/fermentable/list", {});
     fermentables.splice(0, fermentables.length, ...data);
   }
 
   async function create(fermentable: Fermentable) {
-    await requests.post("/api/fermentable.new", {
+    await requests.post("/api/fermentable/new", {
       name: fermentable.name,
       country: fermentable.country,
       category: fermentable.category,
@@ -33,14 +33,14 @@ export function fermentablesStore() {
   }
 
   async function remove(id: number) {
-    await requests.post("/api/fermentable.delete", { id });
+    await requests.post("/api/fermentable/delete", { id });
     await fetch();
   }
 
   async function bulkImport(file: File) {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("file", file);
-    requests.post("/api/fermentable.import", formData, {
+    requests.post("/api/fermentable/import", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

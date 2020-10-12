@@ -174,12 +174,7 @@ impl Fermentable {
     }
 }
 
-#[tracing::instrument(
-    skip(db),
-    fields(
-        request_id=%uuid::Uuid::new_v4(),
-    )
-)]
+#[tracing::instrument(skip(db))]
 pub async fn new(
     db: Data<PgPool>,
     new_fermentable: Json<NewFermentable>,
@@ -188,12 +183,7 @@ pub async fn new(
     Ok(Json(fermentable))
 }
 
-#[tracing::instrument(
-    skip(db, payload),
-    fields(
-        request_id=%uuid::Uuid::new_v4(),
-    )
-)]
+#[tracing::instrument(skip(db, payload))]
 pub async fn import(db: Data<PgPool>, mut payload: Multipart) -> Result<Json<()>, ApiError> {
     let field = match payload.try_next().await {
         Ok(Some(field)) => field,
@@ -232,23 +222,13 @@ pub async fn import(db: Data<PgPool>, mut payload: Multipart) -> Result<Json<()>
     }
 }
 
-#[tracing::instrument(
-    skip(db),
-    fields(
-        request_id=%uuid::Uuid::new_v4(),
-    )
-)]
+#[tracing::instrument(skip(db))]
 pub async fn list(db: Data<PgPool>) -> Result<Json<Vec<Fermentable>>, ApiError> {
     let fermentables = Fermentable::list(db.get_ref()).await?;
     Ok(Json(fermentables))
 }
 
-#[tracing::instrument(
-    skip(db, fermentable_id),
-    fields(
-        request_id=%uuid::Uuid::new_v4(),
-    )
-)]
+#[tracing::instrument(skip(db))]
 pub async fn delete(
     db: Data<PgPool>,
     fermentable_id: Json<FermentableId>,

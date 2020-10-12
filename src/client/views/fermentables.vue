@@ -71,9 +71,15 @@ export default {
     fetch();
 
     async function createFermentable() {
-      if (
-        !every([name, country, category, kind, color, ppg], (v) => v !== "")
-      ) {
+      const values = [
+        name.value,
+        country.value,
+        category.value,
+        kind.value,
+        color.value,
+        ppg.value,
+      ];
+      if (!every(values, (v) => v !== "")) {
         await create({
           name: name.value,
           country: country.value,
