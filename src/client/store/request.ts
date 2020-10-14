@@ -1,6 +1,5 @@
 import axios from "axios";
-import { computed } from "vue";
-import { inject, provide, reactive } from "vue";
+import { computed, inject, provide, reactive } from "vue";
 
 const createState = () => {
   const state = reactive({ pendingRequests: new Map() });

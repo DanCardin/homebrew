@@ -64,16 +64,19 @@
                 input.form-control
               td
                 input.form-control
+    search-select
 </template>
 
 <script lang="ts">
-import { createBatchIngredientStore } from "/@client/store/batch";
-import { useRequests } from "/@client/store/request";
+import SearchSelect from "./search-select.vue";
+import { createBatchIngredientStore } from "../store/batch";
+import { useRequests } from "../store/request";
 
 interface Color {
   color: string;
 }
 export default {
+  components: { SearchSelect },
   props: {
     batchId: Number,
   },

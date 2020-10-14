@@ -17,7 +17,7 @@ router-view
 </template>
 
 <script lang="ts">
-import { useRequests } from "/@client/store/request";
+import { useRequests } from "./store/request";
 
 export default {
   setup() {

@@ -87,11 +87,11 @@ table.col.table.table-bordered
 </template>
 
 <script lang="ts">
-import InputAbv from "/@client/components/input-abv.vue";
-import InputGravity from "/@client/components/input-gravity.vue";
-import InputVolume from "/@client/components/input-volume.vue";
-import { createBatchStore } from "/@client/store/batch";
-import { useRequests } from "/@client/store/request";
+import InputAbv from "./input-abv.vue";
+import InputGravity from "./input-gravity.vue";
+import InputVolume from "./input-volume.vue";
+import { createBatchStore } from "../store/batch";
+import { useRequests } from "../store/request";
 import axios from "axios";
 import { reactive, ref } from "vue";
 

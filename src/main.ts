@@ -1,5 +1,5 @@
-import "/@client/registerServiceWorker";
-import "/@client/scss/custom.scss";
+import "./client/registerServiceWorker";
+import "./client/scss/custom.scss";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -11,9 +11,9 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import App from "/@client/app.vue";
-import router from "/@client/router";
-import { requestsSymbol, state } from "/@client/store/request";
+import App from "./client/app.vue";
+import router from "./client/router";
+import { requestsSymbol, state } from "./client/store/request";
 import { createApp } from "vue";
 
 library.add(faBeer);

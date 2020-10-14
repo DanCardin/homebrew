@@ -1,178 +1,15 @@
 use crate::error::ApiError;
+use crate::repos::fermentable::{Fermentable, FermentableId, FermentableSearch, NewFermentable};
 use actix_multipart::Multipart;
 use actix_web::error::BlockingError;
 use actix_web::web;
 use actix_web::web::{Data, Json};
 use bytes::buf::BufExt;
 use futures::TryStreamExt;
-use num_traits::cast::ToPrimitive;
-use serde::{Deserialize, Serialize};
 use sqlx;
 use sqlx::postgres::PgPool;
 use std::convert::Infallible;
 use tracing;
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct FermentableId {
-    pub id: i32,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct NewFermentable {
-    pub name: String,
-    pub country: Option<String>,
-    pub category: String,
-    pub kind: String,
-    pub color: i32,
-    pub ppg: f64,
-}
-
-#[derive(Debug, Serialize)]
-pub struct Fermentable {
-    pub id: i32,
-    pub name: String,
-    pub country: Option<String>,
-    pub category: String,
-    pub kind: String,
-    pub color: i32,
-    pub ppg: f64,
-}
-
-#[derive(Debug, sqlx::FromRow)]
-struct DbFermentable {
-    pub id: i32,
-    pub name: String,
-    pub country: Option<String>,
-    pub category: String,
-    pub kind: String,
-    pub color: i32,
-    pub ppg: sqlx::types::BigDecimal,
-}
-
-impl From<DbFermentable> for Fermentable {
-    fn from(m: DbFermentable) -> Self {
-        Self {
-            id: m.id,
-            name: m.name,
-            country: m.country,
-            category: m.category,
-            kind: m.kind,
-            color: m.color,
-            ppg: m.ppg.to_f64().unwrap_or(0.),
-        }
-    }
-}
-
-impl Fermentable {
-    pub async fn insert(db: &PgPool, new: NewFermentable) -> Result<Self, ApiError> {
-        let trans = db.begin().await?;
-
-        let row = sqlx::query_as!(
-            DbFermentable,
-            r#"
-            INSERT INTO fermentable (name, country, category, kind, color, ppg)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING id, name, country, category, kind, color, ppg
-            "#,
-            new.name,
-            new.country,
-            new.category,
-            new.kind,
-            new.color,
-            sqlx::types::BigDecimal::from(new.ppg)
-        )
-        .fetch_one(db)
-        .await?;
-
-        trans.commit().await?;
-        Ok(row.into())
-    }
-
-    pub async fn bulk_insert(
-        db: &PgPool,
-        new_fermentables: Vec<NewFermentable>,
-    ) -> Result<(), ApiError> {
-        let trans = db.begin().await?;
-
-        fn collect(
-            rows: Vec<NewFermentable>,
-        ) -> (
-            Vec<String>,
-            Vec<Option<String>>,
-            Vec<String>,
-            Vec<String>,
-            Vec<i32>,
-            Vec<sqlx::types::BigDecimal>,
-        ) {
-            let mut names = Vec::new();
-            let mut countries = Vec::new();
-            let mut categories = Vec::new();
-            let mut kinds = Vec::new();
-            let mut colors = Vec::new();
-            let mut ppgs = Vec::new();
-            for row in rows.into_iter() {
-                names.push(row.name);
-                countries.push(row.country);
-                categories.push(row.category);
-                kinds.push(row.kind);
-                colors.push(row.color);
-                ppgs.push(sqlx::types::BigDecimal::from(row.ppg));
-            }
-            (names, countries, categories, kinds, colors, ppgs)
-        }
-
-        let (names, countries, categories, kinds, colors, ppgs) = collect(new_fermentables);
-        sqlx::query_as!(
-            Fermentable,
-            r#"
-            INSERT INTO fermentable (name, country, category, kind, color, ppg)
-            VALUES (
-                UNNEST($1::VARCHAR[]),
-                UNNEST($2::VARCHAR[]),
-                UNNEST($3::VARCHAR[]),
-                UNNEST($4::VARCHAR[]),
-                UNNEST($5::INTEGER[]),
-                UNNEST($6::DECIMAL[])
-            )"#,
-            &names,
-            &countries as _,
-            &categories,
-            &kinds,
-            &colors,
-            &ppgs
-        )
-        .fetch_one(db)
-        .await?;
-
-        trans.commit().await?;
-        Ok(())
-    }
-
-    pub async fn delete(db: &PgPool, id: i32) -> Result<(), ApiError> {
-        let trans = db.begin().await?;
-
-        sqlx::query_as!(DbFermentable, "DELETE FROM fermentable WHERE id = $1", id)
-            .execute(db)
-            .await?;
-
-        trans.commit().await?;
-        Ok(())
-    }
-
-    pub async fn list(db: &PgPool) -> Result<Vec<Self>, ApiError> {
-        let rows = sqlx::query_as!(
-            DbFermentable,
-            "SELECT id, name, country, category, kind, color, ppg FROM fermentable",
-        )
-        .fetch_all(db)
-        .await?;
-
-        let rows: Vec<Fermentable> = rows.into_iter().map(|row| row.into()).collect();
-        Ok(rows)
-    }
-}
 
 #[tracing::instrument(skip(db))]
 pub async fn new(
@@ -233,6 +70,16 @@ pub async fn delete(
     db: Data<PgPool>,
     fermentable_id: Json<FermentableId>,
 ) -> Result<Json<()>, ApiError> {
-    Fermentable::delete(db.get_ref(), fermentable_id.0.id).await?;
+    Fermentable::delete(db.get_ref(), fermentable_id.0).await?;
     Ok(Json(()))
+}
+
+#[tracing::instrument(skip(db))]
+pub async fn search(
+    db: Data<PgPool>,
+    search: Json<FermentableSearch>,
+) -> Result<Json<Vec<Fermentable>>, ApiError> {
+    let rows = Fermentable::search(db.get_ref(), search.0).await?;
+    tracing::info!("{:?}", rows);
+    Ok(Json(rows))
 }

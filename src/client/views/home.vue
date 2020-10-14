@@ -16,8 +16,8 @@ div
 </template>
 
 <script lang="ts">
-import router from "/@client/router";
-import { beerStore } from "/@client/store/beer";
+import router from "../router";
+import { beerStore } from "../store/beer";
 import { onMounted } from "vue";
 
 export default {

@@ -39,9 +39,9 @@
 </template>
 
 <script lang="ts">
-import Grid from "/@client/components/grid.vue";
-import { fermentablesStore } from "/@client/store/fermentables";
-import { useRequests } from "/@client/store/request";
+import Grid from "../components/grid.vue";
+import { fermentablesStore } from "../store/fermentables";
+import { useRequests } from "../store/request";
 import { every } from "lodash-es";
 import { ref } from "vue";
 

@@ -1,5 +1,5 @@
-import { Store } from "/@client/store";
-import { state } from "/@client/store/request";
+import { Store } from "./";
+import { state } from "./request";
 
 interface Beer {
   id: number;

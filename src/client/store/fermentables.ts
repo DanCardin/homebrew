@@ -1,4 +1,4 @@
-import { useRequests } from "/@client/store/request";
+import { useRequests } from "./request";
 import { reactive, readonly } from "vue";
 
 interface Fermentable {
@@ -48,11 +48,17 @@ export function fermentablesStore() {
     await fetch();
   }
 
+  async function search(query: string) {
+    const { data } = await requests.post("/api/fermentable/search", { query });
+    return data;
+  }
+
   return {
     remove,
     fetch,
     create,
     bulkImport,
+    search,
     fermentables: readonly(fermentables),
   };
 }

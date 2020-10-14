@@ -19,16 +19,6 @@ CREATE TABLE batch_measurement (
     PRIMARY KEY (batch_id, name)
 );
 
-CREATE TABLE batch_ingredient (
-    id SERIAL NOT NULL PRIMARY KEY,
-    batch_id INTEGER NOT NULL,
-    kind VARCHAR NOT NULL,
-    unit VARCHAR NOT NULL,
-    name VARCHAR NOT NULL DEFAULT '',
-    amount NUMERIC(5, 2) NOT NULL DEFAULT 0,
-    time VARCHAR DEFAULT NULL
-);
-
 CREATE TABLE batch_note (
     id SERIAL NOT NULL PRIMARY KEY,
     beer_id INTEGER NOT NULL,

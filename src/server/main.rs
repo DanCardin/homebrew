@@ -5,6 +5,7 @@ use tracing_actix_web::TracingLogger;
 
 pub mod config;
 pub mod error;
+pub mod repos;
 pub mod routes;
 pub mod telemetry;
 
@@ -60,15 +61,15 @@ async fn main() -> std::io::Result<()> {
                                 "measurement/update",
                                 web::post().to(routes::batch::update_batch_measurement),
                             )
-                            .service(
-                                web::scope("ingredient")
-                                    .route("new", web::post().to(routes::batch::ingredient::new))
-                                    .route("list", web::post().to(routes::batch::ingredient::list))
-                                    .route(
-                                        "delete",
-                                        web::post().to(routes::batch::ingredient::delete),
-                                    ),
-                            ),
+                            // .service(
+                            //     web::scope("ingredient")
+                            //         .route("new", web::post().to(routes::batch::ingredient::new))
+                            //         .route("list", web::post().to(routes::batch::ingredient::list))
+                            //         .route(
+                            //             "delete",
+                            //             web::post().to(routes::batch::ingredient::delete),
+                            //         ),
+                            // ),
                     ),
             )
             .service(
@@ -76,7 +77,8 @@ async fn main() -> std::io::Result<()> {
                     .route("new", web::post().to(routes::fermentable::new))
                     .route("import", web::post().to(routes::fermentable::import))
                     .route("delete", web::post().to(routes::fermentable::delete))
-                    .route("list", web::post().to(routes::fermentable::list)),
+                    .route("list", web::post().to(routes::fermentable::list))
+                    .route("search", web::post().to(routes::fermentable::search)),
             )
     })
     .workers(4);

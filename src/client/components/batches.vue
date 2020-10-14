@@ -11,9 +11,9 @@
 </template>
 
 <script lang="ts">
-import Batch from "/@client/components/batch.vue";
-import BeerInfo from "/@client/components/beer-info.vue";
-import { beerStore } from "/@client/store/beer";
+import Batch from "../components/batch.vue";
+import BeerInfo from "../components/beer-info.vue";
+import { beerStore } from "../store/beer";
 import { computed } from "vue";
 
 export default {

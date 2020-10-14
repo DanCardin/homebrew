@@ -28,9 +28,9 @@
 </template>
 
 <script lang="ts">
-import BatchIngredients from "/@client/components/batch-ingredients.vue";
-import BatchTargets from "/@client/components/batch-targets.vue";
-import { beerStore } from "/@client/store/beer";
+import BatchIngredients from "./batch-ingredients.vue";
+import BatchTargets from "./batch-targets.vue";
+import { beerStore } from "../store/beer";
 import { computed, ref } from "vue";
 export default {
   components: { BatchTargets, BatchIngredients },

@@ -8,8 +8,6 @@ use sqlx::postgres::PgPool;
 use tracing;
 use tracing::info;
 
-pub mod ingredient;
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NewBatch {

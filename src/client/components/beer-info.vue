@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { beerStore } from "/@client/store/beer";
+import { beerStore } from "../store/beer";
 import { isNaN } from "lodash-es";
 import { defineComponent, ref } from "vue";
 
