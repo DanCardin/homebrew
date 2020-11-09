@@ -22,8 +22,8 @@
     "popper.js": "^1.16.1",
     "register-service-worker": "^1.7.1",
     "vite": "^1.0.0-rc.4",
-    "vue": "^3.0.0",
-    "vue-router": "^4.0.0-beta.11",
+    "vue": "^3.0.2",
+    "vue-router": "^4.0.0-rc.1",
     "vuejs-logger": "^1.5.4"
   },
   "devDependencies": {
@@ -69,6 +69,11 @@
     ],
     "parserOptions": {
       "ecmaVersion": 2020
+    },
+    "rules": {
+      "sort-imports": [
+        "warn"
+      ]
     },
     "plugins": [
       "only-warn"

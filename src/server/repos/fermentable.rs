@@ -23,7 +23,8 @@ pub struct NewFermentable {
 
 #[derive(Debug, Deserialize)]
 pub struct FermentableSearch {
-    pub query: String,
+    pub query: Option<String>,
+    pub ids: Option<Vec<i32>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -96,8 +97,7 @@ impl Fermentable {
         }
 
         let (names, countries, categories, kinds, colors, ppgs) = collect(new_fermentables);
-        sqlx::query_as!(
-            Fermentable,
+        sqlx::query!(
             r#"
             INSERT INTO fermentable (name, country, category, kind, color, ppg)
             VALUES (
@@ -150,21 +150,28 @@ impl Fermentable {
     }
 
     pub async fn search(db: &PgPool, search: FermentableSearch) -> Result<Vec<Self>, ApiError> {
+        let query = format!("%{}%", search.query.unwrap_or("<null>".to_string()));
+        let ids = match search.ids {
+            Some(ids) => ids,
+            None => Vec::new(),
+        };
+
         let rows = sqlx::query_as!(
             DbFermentable,
             r#"
             SELECT id, name, country, category, kind, color, ppg
             FROM fermentable
-            WHERE
-                name ILIKE '%grai%' OR
-                name ILIKE $1 OR
-                country ILIKE $1 OR
-                category ILIKE $1 OR
-                kind ILIKE $1 OR
-                color::VARCHAR ILIKE $1 OR
-                ppg::VARCHAR ILIKE $1
+            WHERE (
+                CONCAT(
+                    name, ',', country, ',', category, ',',
+                    kind, ',', color, ',', ppg
+                ) ILIKE $1
+                OR
+                id = any($2)
+            )
             "#,
-            format!("'%{}%'", search.query),
+            query,
+            &ids,
         )
         .fetch_all(db)
         .await?;

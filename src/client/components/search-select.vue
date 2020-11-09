@@ -2,10 +2,9 @@
 .dropdown
   input.dropdown-input(
     v-show="!selectedItem",
-    :value="selectValue",
     @focus="onFocus",
     @blur="onBlur",
-    @input="onInput($event.target.value)",
+    @input.stop="onInput($event.target.value)",
     type="text",
     placeholder="Find"
     ref="selectInput",
@@ -19,43 +18,47 @@
       @click="selectItem(item)",
       tabindex="0"
     )
-      span {{ itemDisplayValue(item) }}
+      slot(:item="item" name="row")
 </template>
 
 <script lang="ts">
-import getUnicodeFlagIcon from "country-flag-icons/unicode";
+import { PropType, defineComponent, nextTick, reactive, ref } from "vue";
 import { debounce } from "lodash-es";
-import { fermentablesStore } from "../store/fermentables";
-import { nextTick, reactive, ref } from "vue";
 
-export default {
-  props: {},
+export default defineComponent({
+  props: {
+    modelValue: Object,
+    search: {
+      type: Function as PropType<(arg0: string) => object[]>,
+      required: true,
+    },
+    selectedItem: {
+      type: Object,
+    },
+  },
+  emits: ["update:modelValue"],
   setup(props, { emit }) {
-    const { search } = fermentablesStore();
+    const items = reactive<object[]>([]);
 
-    const items = reactive([]);
-
-    const selectInput: ref<HTMLInputElement> = ref(null);
-    const dropdownList: ref<HTMLInputElement> = ref(null);
+    const selectInput = ref<HTMLInputElement | null>(null);
+    const dropdownList = ref<HTMLInputElement | null>(null);
     const opened = ref(false);
-    const selectedItem = ref(null);
-    const selectValue = ref("");
+    // const selectedItem = ref(null);
 
-    async function searchQuery(value) {
-      const results = await search(value);
+    async function searchQuery(value: string) {
+      const results = await props.search(value);
       items.splice(0, items.length, ...results);
     }
-    searchQuery("");
 
     return {
       items,
       opened,
       selectInput,
       dropdownList,
-      selectedItem,
-      selectValue,
+      // selectedItem,
       onInput: debounce(searchQuery, 500),
       onFocus: async () => {
+        searchQuery("");
         opened.value = true;
       },
       onBlur: async (e) => {
@@ -67,29 +70,27 @@ export default {
         }
       },
       selectItem: (item) => {
-        selectedItem.value = item;
+        // props.selectedItem.value = item;
         opened.value = false;
-        selectValue.value = "";
+
         emit("update:modelValue", item);
       },
       resetSelection: async () => {
-        selectedItem.value = null;
+        // props.selectedItem.value = null;
         opened.value = true;
+
         await nextTick();
         selectInput.value.focus();
+
         emit("update:modelValue", null);
-      },
-      itemDisplayValue: (item) => {
-        return `${getUnicodeFlagIcon(item.country)} ${item.name}`;
       },
     };
   },
-};
+});
 </script>
 
 <style lang="scss">
 .dropdown {
-  position: relative;
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
@@ -123,8 +124,9 @@ export default {
 
 .dropdown-list {
   position: absolute;
+  z-index: 1;
   width: 100%;
-  max-height: 500px;
+  max-height: 20em;
   margin-top: 4px;
   overflow-y: scroll;
   background: #ffffff;

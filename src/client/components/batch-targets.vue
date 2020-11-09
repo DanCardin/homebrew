@@ -117,8 +117,8 @@ export default {
     const actualIBU = ref("");
     const targetSRM = ref("");
     const actualSRM = ref("");
-    const targetSRMHex: reactive<Color> = reactive({});
-    const actualSRMHex: reactive<Color> = reactive({});
+    const targetSRMHex = reactive<Color>({ color: "" });
+    const actualSRMHex = reactive<Color>({ color: "" });
 
     const targetSRMInput = async () => {
       let color = "#000000";

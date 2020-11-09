@@ -1,4 +1,4 @@
-use actix_web::{web, App, HttpServer};
+use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer};
 use listenfd::ListenFd;
 use sqlx::postgres::PgPool;
 use tracing_actix_web::TracingLogger;
@@ -8,6 +8,23 @@ pub mod error;
 pub mod repos;
 pub mod routes;
 pub mod telemetry;
+
+fn json_error_handler(
+    err: actix_web::error::JsonPayloadError,
+    _req: &HttpRequest,
+) -> actix_web::error::Error {
+    use actix_web::error::JsonPayloadError;
+
+    let detail = err.to_string();
+    let resp = match &err {
+        JsonPayloadError::ContentType => HttpResponse::UnsupportedMediaType().body(detail),
+        JsonPayloadError::Deserialize(json_err) if json_err.is_data() => {
+            HttpResponse::UnprocessableEntity().body(detail)
+        }
+        _ => HttpResponse::BadRequest().body(detail),
+    };
+    actix_web::error::InternalError::from_response(err, resp).into()
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -27,6 +44,7 @@ async fn main() -> std::io::Result<()> {
     let connection = web::Data::new(connection);
     let mut server = HttpServer::new(move || {
         App::new()
+            .app_data(web::JsonConfig::default().error_handler(json_error_handler))
             .wrap(TracingLogger)
             .app_data(connection.clone())
             .route("/health", web::get().to(routes::check_health))
@@ -61,15 +79,23 @@ async fn main() -> std::io::Result<()> {
                                 "measurement/update",
                                 web::post().to(routes::batch::update_batch_measurement),
                             )
-                            // .service(
-                            //     web::scope("ingredient")
-                            //         .route("new", web::post().to(routes::batch::ingredient::new))
-                            //         .route("list", web::post().to(routes::batch::ingredient::list))
-                            //         .route(
-                            //             "delete",
-                            //             web::post().to(routes::batch::ingredient::delete),
-                            //         ),
-                            // ),
+                            .service(
+                                web::scope("fermentable")
+                                    .route("new", web::post().to(routes::batch::fermentable::new))
+                                    .route(
+                                        "delete",
+                                        web::post().to(routes::batch::fermentable::delete),
+                                    )
+                                    .route("list", web::post().to(routes::batch::fermentable::list))
+                                    .route(
+                                        "update",
+                                        web::post().to(routes::batch::fermentable::update),
+                                    )
+                                    .route(
+                                        "delete",
+                                        web::post().to(routes::batch::fermentable::delete),
+                                    ),
+                            ),
                     ),
             )
             .service(

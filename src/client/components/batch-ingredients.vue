@@ -1,26 +1,10 @@
 <template lang="pug">
 .card.m-2.border-secondary.subsection
-  .card-header.text-uppercase Ingredients
+  .card-header.text-uppercase Fermentables
   .card-body.text-left.text-secondary
     .row
       .col-5
-        table.table.table-bordered
-          thead
-            tr
-              th(width="75%") Grain
-              th Weight
-              th.p-0.align-middle
-                button.create
-                  fa(icon="plus" @click="newIngredient('grain', 'lb')")
-          tbody
-            tr(v-for="item of ingredients.grain")
-              td.p-0
-                input.table-input.form-control(:value="item.name")
-              td.p-0
-                input.table-input.form-control(:value="item.value")
-              td.p-0
-                button.trash
-                  fa(icon="trash" @click="deleteIngredient('grain', item.id)")
+        batch-fermentable-table(:batchId="batchId")
       .col-7
         table.table.table-bordered
           thead
@@ -56,7 +40,7 @@
         table.table.table-bordered
           thead
             tr
-              th(width="75%") Other Ingredients
+              th(width="75%") Other Fermentables
               th Weight/Amt
           tbody
             tr
@@ -64,41 +48,29 @@
                 input.form-control
               td
                 input.form-control
-    search-select
 </template>
 
 <script lang="ts">
-import SearchSelect from "./search-select.vue";
-import { createBatchIngredientStore } from "../store/batch";
+import { defineComponent } from "vue";
+import BatchFermentableTable from "./batch-fermentable-table.vue";
+import { fermentablesStore } from "../store/fermentables";
 import { useRequests } from "../store/request";
 
 interface Color {
   color: string;
 }
-export default {
-  components: { SearchSelect },
+export default defineComponent({
+  components: { BatchFermentableTable },
   props: {
-    batchId: Number,
+    batchId: {
+      type: Number,
+      required: true,
+    },
   },
   async setup(props) {
-    const requests = useRequests();
-    const {
-      deleteIngredient,
-      fetchIngredients,
-      newIngredient,
-      updateIngredient,
-      ingredients,
-    } = createBatchIngredientStore(requests, props.batchId);
-    await fetchIngredients();
-    return {
-      deleteIngredient,
-      fetchIngredients,
-      newIngredient,
-      updateIngredient,
-      ingredients,
-    };
+    return {};
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
@@ -108,9 +80,5 @@ export default {
   border-radius: 0;
   border-left: none;
   border-right: none;
-}
-
-.table-input {
-  border: none;
 }
 </style>

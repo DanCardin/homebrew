@@ -13,6 +13,9 @@ lint:  ## Check the code for formatting and other linter errors
 	npm run lint
 	cargo run sqlx prepare --check -- --bin homebrew-server
 
+lock:
+	cargo run sqlx prepare -- --bin homebrew-server
+
 fix:  ## Automatically fix formatting related linter errors
 	npm run fix
 

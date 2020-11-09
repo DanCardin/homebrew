@@ -80,6 +80,6 @@ pub async fn search(
     search: Json<FermentableSearch>,
 ) -> Result<Json<Vec<Fermentable>>, ApiError> {
     let rows = Fermentable::search(db.get_ref(), search.0).await?;
-    tracing::info!("{:?}", rows);
+    tracing::info!("row: {:?}", rows.len());
     Ok(Json(rows))
 }

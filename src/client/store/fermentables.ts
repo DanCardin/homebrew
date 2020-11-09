@@ -1,17 +1,11 @@
+import type { SearchQuery, Fermentable } from "../types/fermentable";
+import { reactive, readonly, computed } from "vue";
+import { keyBy } from "lodash-es";
 import { useRequests } from "./request";
-import { reactive, readonly } from "vue";
-
-interface Fermentable {
-  name: string;
-  country: string;
-  category: string;
-  kind: string;
-  color: number;
-  ppg: number;
-}
 
 export function fermentablesStore() {
   const fermentables = reactive([]);
+  const byId = computed(() => keyBy(fermentables, "id"));
 
   const requests = useRequests();
 
@@ -48,9 +42,20 @@ export function fermentablesStore() {
     await fetch();
   }
 
-  async function search(query: string) {
-    const { data } = await requests.post("/api/fermentable/search", { query });
+  async function search({ query, ids }: SearchQuery): unknown[] {
+    const { data } = await requests.post("/api/fermentable/search", {
+      query,
+      ids,
+    });
+    fermentables.splice(0, fermentables.length, ...data);
     return data;
+  }
+
+  function get(id: number) {
+    console.log(id);
+    console.log(byId);
+    console.log(byId[id]);
+    return byId[id];
   }
 
   return {
@@ -59,6 +64,7 @@ export function fermentablesStore() {
     create,
     bulkImport,
     search,
-    fermentables: readonly(fermentables),
+    get,
+    items: readonly(fermentables),
   };
 }
