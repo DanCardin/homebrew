@@ -9,10 +9,11 @@ table.table.table-bordered
           fa(icon="plus")
   tbody
     batch-fermentable-row(
-      v-for="item of batchFermentableStore.items"
+      v-for="item of batchFermentableStore.items",
+      :batchFermentable="item",
       :batchFermentableStore="batchFermentableStore",
       :fermentableStore="fermentableStore",
-      :batchFermentable="item"
+      :key="item.id",
     )
 </template>
 
@@ -22,7 +23,6 @@ import BatchFermentableRow from "./batch-fermentable-row.vue";
 import { createBatchFermentableStore } from "../store/batchIngredient";
 import { fermentablesStore } from "../store/fermentables";
 import { isNull, keyBy, reject } from "lodash-es";
-import { useRequests } from "../store/request";
 
 export default defineComponent({
   components: { BatchFermentableRow },
@@ -33,11 +33,7 @@ export default defineComponent({
     },
   },
   async setup(props) {
-    const requests = useRequests();
-    const batchFermentableStore = createBatchFermentableStore(
-      requests,
-      props.batchId
-    );
+    const batchFermentableStore = createBatchFermentableStore(props.batchId);
 
     const fermentableStore = fermentablesStore();
 

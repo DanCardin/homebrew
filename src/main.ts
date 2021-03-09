@@ -1,5 +1,4 @@
-import "./client/registerServiceWorker";
-import "./client/scss/custom.scss";
+import "./client/styles/index.css";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {

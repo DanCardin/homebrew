@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const path = require("path");
+import path from "path";
+import vue from "@vitejs/plugin-vue";
 
 module.exports = {
+  plugins: [vue()],
   alias: {
-    "/@client/": path.resolve(__dirname, "src/client"),
+    "/@client": path.resolve(__dirname, "src/client"),
   },
   proxy: {
     "/api": {

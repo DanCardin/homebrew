@@ -13,14 +13,21 @@
 <script lang="ts">
 import Batch from "../components/batch.vue";
 import BeerInfo from "../components/beer-info.vue";
-import { beerStore } from "../store/beer";
-import { computed } from "vue";
+import { useBeerStore } from "../store/beer";
+import { computed, defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   components: { BeerInfo, Batch },
-  props: { beerId: Number },
+  props: {
+    beerId: {
+      type: Number,
+      required: true,
+    },
+  },
   async setup(props) {
-    const store = beerStore.getState();
+    const beerStore = useBeerStore();
+
+    const store = beerStore.state;
     const batches = computed(() => store.batches);
 
     await beerStore.getBatches(props.beerId);
@@ -33,5 +40,5 @@ export default {
       createBatch,
     };
   },
-};
+});
 </script>

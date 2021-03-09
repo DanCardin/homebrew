@@ -74,8 +74,6 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@import "../scss/custom.scss";
-
 .subsection {
   border-radius: 0;
   border-left: none;

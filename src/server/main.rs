@@ -91,6 +91,8 @@ async fn main() -> std::io::Result<()> {
                                         "update",
                                         web::post().to(routes::batch::fermentable::update),
                                     )
+
+
                                     .route(
                                         "delete",
                                         web::post().to(routes::batch::fermentable::delete),

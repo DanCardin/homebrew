@@ -61,15 +61,15 @@ export default defineComponent({
         searchQuery("");
         opened.value = true;
       },
-      onBlur: async (e) => {
+      onBlur: async (e: FocusEvent) => {
         if (
           e.relatedTarget === null ||
-          e.relatedTarget.parentElement !== dropdownList.value
+          (e.relatedTarget as HTMLElement).parentElement !== dropdownList.value
         ) {
           opened.value = false;
         }
       },
-      selectItem: (item) => {
+      selectItem: (item: unknown) => {
         // props.selectedItem.value = item;
         opened.value = false;
 
@@ -80,7 +80,10 @@ export default defineComponent({
         opened.value = true;
 
         await nextTick();
-        selectInput.value.focus();
+
+        if (selectInput.value) {
+          selectInput.value.focus();
+        }
 
         emit("update:modelValue", null);
       },

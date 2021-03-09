@@ -11,9 +11,9 @@ input.specific-gravity.form-control(
 </template>
 
 <script lang="ts">
-import { computed } from "vue";
+import { computed, defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   props: {
     value: {
       type: Number,
@@ -25,16 +25,16 @@ export default {
     },
   },
   emits: ["update:value"],
-  setup(props, context) {
+  setup(props, { emit }) {
     const localValue = computed({
       get: () => props.value.toFixed(3),
-      set: (value) => context.emit("update:value", value),
+      set: (value) => emit("update:value", value),
     });
     return {
       localValue,
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

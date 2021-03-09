@@ -1,17 +1,24 @@
 import type { SearchQuery, Fermentable } from "../types/fermentable";
-import { reactive, readonly, computed } from "vue";
+import { computed, reactive, readonly } from "vue";
 import { keyBy } from "lodash-es";
 import { useRequests } from "./request";
 
-export function fermentablesStore() {
-  const fermentables = reactive([]);
-  const byId = computed(() => keyBy(fermentables, "id"));
+interface FermentableStore {
+  items: Fermentable[];
+  byId: Record<number, Fermentable>;
+}
 
+export function fermentablesStore() {
   const requests = useRequests();
+
+  const state: FermentableStore = reactive({
+    items: [],
+    byId: computed(() => keyBy(state.items, "id")),
+  });
 
   async function fetch() {
     const { data } = await requests.post("/api/fermentable/list", {});
-    fermentables.splice(0, fermentables.length, ...data);
+    state.items.splice(0, state.items.length, ...data);
   }
 
   async function create(fermentable: Fermentable) {
@@ -42,20 +49,18 @@ export function fermentablesStore() {
     await fetch();
   }
 
-  async function search({ query, ids }: SearchQuery): unknown[] {
-    const { data } = await requests.post("/api/fermentable/search", {
-      query,
-      ids,
-    });
-    fermentables.splice(0, fermentables.length, ...data);
+  async function search({ query, ids }: SearchQuery): Promise<Fermentable[]> {
+    let payload = { query, ids };
+    const data = await requests.post<Fermentable[]>(
+      "/api/fermentable/search",
+      payload
+    );
+    state.items.splice(0, state.items.length, ...data);
     return data;
   }
 
   function get(id: number) {
-    console.log(id);
-    console.log(byId);
-    console.log(byId[id]);
-    return byId[id];
+    return state.byId[id];
   }
 
   return {
@@ -65,6 +70,6 @@ export function fermentablesStore() {
     bulkImport,
     search,
     get,
-    items: readonly(fermentables),
+    items: readonly(state.items),
   };
 }

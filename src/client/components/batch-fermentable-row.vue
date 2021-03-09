@@ -1,8 +1,6 @@
 <template lang="pug">
 tr
   td.p-0
-    span {{ fermentableStore.get(batchFermentable.fermentableId) }}
-  td.p-0
     search-select(
       :selectedItem="fermentableStore.get(batchFermentable.fermentableId)",
       :search="search",
@@ -12,10 +10,15 @@ tr
         span(v-if="props.item.country") {{ getUnicodeFlagIcon(props.item.country) }}
         span {{ props.item.name }}
   td.p-0
-    input.table-input.form-control(
-      :value="batchFermentable.amount",
-      @input.lazy="updateValue($event.target.value)"
-    )
+    .input-group.mb-3
+      input(
+        :value="batchFermentable.amount",
+        @input.lazy="updateValue($event.target.value)"
+      )
+      button.relative(type="button") V
+      .absolute
+        a.block.bg-blue Lb
+        a.block.bg-blue Oz
   td.p-0
     button.trash(@click="batchFermentableStore.remove(batchFermentable.id)")
       fa(icon="trash")
@@ -41,7 +44,7 @@ export default defineComponent({
       required: true,
     },
   },
-  async setup(props) {
+  setup(props) {
     async function updateValue(value: string) {
       await props.batchFermentableStore.update(
         props.batchFermentable.id,

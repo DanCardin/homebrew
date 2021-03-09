@@ -4,6 +4,7 @@ table.table.table-bordered
     tr
       th(
         v-for="key of columns",
+        :key="key",
         @click="sort(key)",
         :class="sortKey == key ? 'active': ''"
       )
@@ -23,9 +24,9 @@ table.table.table-bordered
 
 <script lang="ts">
 import { filter, reverse, sortBy } from "lodash-es";
-import { computed, ref } from "vue";
+import { computed, ref, defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   props: {
     rows: Array,
     columns: Array,
@@ -39,16 +40,27 @@ export default {
 
     const filteredRows = computed(() => {
       let rows = props.rows;
-      if (props.filterKey) {
-        rows = filter(rows, (row) =>
+      let filterKey = props.filterKey;
+
+      if (!rows) {
+        return [];
+      }
+
+      if (filterKey) {
+        rows = filter(rows, (row: Record<string, unknown>) =>
           Object.keys(row).some(
             (key) =>
-              String(row[key]).toLowerCase().indexOf(props.filterKey) > -1
+              String(row[key])
+                .toLowerCase()
+                .indexOf(filterKey as string) > -1
           )
         );
       }
       if (sortKey.value) {
-        rows = sortBy(rows, (row) => row[sortKey.value]);
+        rows = sortBy(
+          rows,
+          (row: Record<string, unknown>) => row[sortKey.value]
+        );
       }
       if (!desc.value) {
         rows = reverse(rows);
@@ -56,7 +68,7 @@ export default {
       return rows;
     });
 
-    function sort(key) {
+    function sort(key: string) {
       if (key == sortKey.value) {
         desc.value = !desc.value;
       } else {
@@ -64,7 +76,7 @@ export default {
         desc.value = true;
       }
     }
-    function clickAction(key) {
+    function clickAction(key: unknown) {
       emit("row-button-click", key);
     }
     return {
@@ -75,46 +87,44 @@ export default {
       sortKey,
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
-@import "../scss/custom.scss";
-
-th {
-  @extend .text-secondary;
-}
-
-th :hover {
-  @extend .text-dark;
-}
-
-th.active {
-  @extend .text-dark;
-}
-
-th.active .arrow {
-  opacity: 1;
-}
-
-.arrow {
-  display: inline-block;
-  vertical-align: middle;
-  width: 0;
-  height: 0;
-  margin-left: 5px;
-  opacity: 0;
-}
-
-.arrow.asc {
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 4px solid;
-}
-
-.arrow.desc {
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid;
-}
+// th {
+//   @extend .text-secondary;
+// }
+//
+// th :hover {
+//   @extend .text-dark;
+// }
+//
+// th.active {
+//   @extend .text-dark;
+// }
+//
+// th.active .arrow {
+//   opacity: 1;
+// }
+//
+// .arrow {
+//   display: inline-block;
+//   vertical-align: middle;
+//   width: 0;
+//   height: 0;
+//   margin-left: 5px;
+//   opacity: 0;
+// }
+//
+// .arrow.asc {
+//   border-left: 4px solid transparent;
+//   border-right: 4px solid transparent;
+//   border-bottom: 4px solid;
+// }
+//
+// .arrow.desc {
+//   border-left: 4px solid transparent;
+//   border-right: 4px solid transparent;
+//   border-top: 4px solid;
+// }
 </style>

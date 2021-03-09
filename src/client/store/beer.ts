@@ -1,5 +1,6 @@
-import { Store } from "./";
 import { state } from "./request";
+import { reactive, readonly } from "vue";
+import { useRequests } from "./request";
 
 interface Beer {
   id: number;
@@ -18,56 +19,75 @@ interface Beers extends Object {
   batches: [];
 }
 
-export class BeerStore extends Store<Beers> {
-  protected data(): Beers {
-    return {
-      beers: [],
-      batches: [],
-    };
-  }
-
-  public async getBeers() {
-    const { data } = await state.post<Beer[]>("/api/beer/list", {});
-    this.state.beers.splice(0, this.state.beers.length, ...data);
-  }
-
-  public async getBeer(id: number) {
-    const { data } = await state.post<Beer>("/api/beer/get", { id });
-    return data;
-  }
-
-  public async newBeer() {
-    const { data } = await state.post("/api/beer/new", {});
-    return data;
-  }
-
-  public async update(beer: Beer) {
-    const { data } = await state.post("/api/beer/update", beer);
-    return data;
-  }
-
-  public async createBatch(beerId: number) {
-    await state.post("/api/beer/batch/new", { beerId });
-    await this.getBatches(beerId);
-  }
-
-  public async getBatches(beerId: number) {
-    const { data } = await state.post("/api/beer/batch/list", {
-      beerId,
-    });
-    this.state.batches.splice(0, this.state.batches.length, ...data);
-  }
-
-  public async updateBatchDate(beerId: number, batchId: number, date: string) {
-    const payload = { batchId, date };
-    await state.post("/api/beer/batch/date/update", payload);
-    await this.getBatches(beerId);
-  }
-
-  public async deleteBatch(batchId: number) {
-    const payload = { batchId };
-    await state.post("/api/beer/batch/delete", payload);
-  }
+export interface BeerStore {
+  beers: Beer[];
+  batches: unknown[];
 }
 
-export const beerStore: BeerStore = new BeerStore();
+export function useBeerStore() {
+  const requests = useRequests();
+
+  const state = reactive<BeerStore>({
+    beers: [],
+    batches: [],
+  });
+
+  async function getBeers() {
+    const data = await requests.post<Beer[]>("/api/beer/list", {});
+    state.beers.splice(0, state.beers.length, ...data);
+  }
+
+  async function getBeer(id: number) {
+    const data = await requests.post<Beer>("/api/beer/get", { id });
+    return data;
+  }
+
+  async function newBeer() {
+    const data = await requests.post<Beer>("/api/beer/new", {});
+    return data;
+  }
+
+  async function update(beer: Beer) {
+    const data = await requests.post("/api/beer/update", beer);
+    return data;
+  }
+
+  async function createBatch(beerId: number) {
+    await requests.post("/api/beer/batch/new", { beerId });
+    await getBatches(beerId);
+  }
+
+  async function getBatches(beerId: number) {
+    const data = await requests.post<Beer[]>("/api/beer/batch/list", {
+      beerId,
+    });
+    state.batches.splice(0, state.batches.length, ...data);
+  }
+
+  async function updateBatchDate(
+    beerId: number,
+    batchId: number,
+    date: string
+  ) {
+    const payload = { batchId, date };
+    await requests.post("/api/beer/batch/date/update", payload);
+    await getBatches(beerId);
+  }
+
+  async function deleteBatch(batchId: number) {
+    const payload = { batchId };
+    await requests.post("/api/beer/batch/delete", payload);
+  }
+
+  return {
+    deleteBatch,
+    updateBatchDate,
+    getBatches,
+    createBatch,
+    update,
+    newBeer,
+    getBeers,
+    getBeer,
+    state: readonly(state),
+  };
+}

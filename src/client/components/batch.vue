@@ -30,16 +30,24 @@
 <script lang="ts">
 import BatchIngredients from "./batch-ingredients.vue";
 import BatchTargets from "./batch-targets.vue";
-import { beerStore } from "../store/beer";
-import { computed, ref } from "vue";
-export default {
+import { useBeerStore } from "../store/beer";
+import { computed, ref, defineComponent } from "vue";
+export default defineComponent({
   components: { BatchTargets, BatchIngredients },
   props: {
-    beerId: Number,
-    batch: Object,
+    beerId: {
+      type: Number,
+      required: true,
+    },
+    batch: {
+      type: Object,
+      required: true,
+    },
   },
   setup(props) {
-    const dateInput: ref<HTMLInputElement> = ref(null);
+    const beerStore = useBeerStore();
+
+    const dateInput = ref<HTMLInputElement | null>(null);
     const date = ref(props.batch.date);
     const editing = ref(false);
     const expanded = ref(false);
@@ -60,6 +68,9 @@ export default {
     function toggleEditing() {
       editing.value = !editing.value;
       setTimeout(() => {
+        if (!dateInput.value) {
+          return;
+        }
         dateInput.value.focus();
       }, 0);
     }
@@ -82,5 +93,5 @@ export default {
       deleteBatch,
     };
   },
-};
+});
 </script>

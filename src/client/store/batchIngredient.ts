@@ -1,12 +1,29 @@
-import { reactive, ref, readonly } from "vue";
-import { Fermentable } from "./fermentables";
+import { reactive, readonly, DeepReadonly } from "vue";
+import type { Fermentable } from "../types/fermentable";
+import { useRequests } from "./request";
+
+interface BatchFermentable {
+  batchId: number;
+  fermentableId: number;
+}
+
+export interface BatchIngredientStore<T> {
+  fetch(): T[];
+  create(unit: string): undefined;
+  remove(id: number): undefined;
+  update(id: number, ingredientId: number, amount: number): undefined;
+
+  items: DeepReadonly<T[]>;
+}
 
 export function batchIngredientStoreFactory<I>(kind: string) {
-  return function (requests, batchId: number) {
+  return function (batchId: number): BatchIngredientStore<I> {
+    const requests = useRequests();
+
     const items = reactive<I[]>([]);
 
     async function fetch() {
-      const { data } = await requests.post<[]>(`/api/beer/batch/${kind}/list`, {
+      const data = await requests.post<[]>(`/api/beer/batch/${kind}/list`, {
         batchId,
       });
       items.splice(0, items.length, ...data);
@@ -46,5 +63,5 @@ export function batchIngredientStoreFactory<I>(kind: string) {
 }
 
 export const createBatchFermentableStore = batchIngredientStoreFactory<
-  Fermentable
+  BatchFermentable
 >("fermentable");

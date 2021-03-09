@@ -11,9 +11,9 @@
     .col-3.offset-6
       input.form-control(v-model="tableFilter", placeholder="Filter")
   grid.align-middle(
-    @row-button-click="remove",
+    @row-button-click="fermentableStore.remove",
     :columns="columns",
-    :rows="fermentables",
+    :rows="fermentableStore.items",
     :filterKey="tableFilter",
     :rowButton="{ class: 'trash', key: 'id', icon: 'trash' }"
   )
@@ -48,18 +48,12 @@ import { ref } from "vue";
 export default {
   components: { Grid },
   setup() {
-    const {
-      remove,
-      fetch,
-      bulkImport,
-      create,
-      fermentables,
-    } = fermentablesStore();
+    const fermentableStore = fermentablesStore();
     const tableFilter = ref("");
-    const modal: ref<HTMLInputElement> = ref(null);
-    const fileInput: ref<HTMLInputElement> = ref(null);
+    const fileInput = ref<HTMLInputElement | null>(null);
 
-    const pending = useRequests().pending;
+    const requests = useRequests();
+    const pending = requests ? requests.pending : false;
 
     const name = ref("");
     const country = ref("");
@@ -68,7 +62,7 @@ export default {
     const color = ref("");
     const ppg = ref("");
 
-    fetch();
+    fermentableStore.fetch();
 
     async function createFermentable() {
       const values = [
@@ -80,7 +74,7 @@ export default {
         ppg.value,
       ];
       if (!every(values, (v) => v !== "")) {
-        await create({
+        await fermentableStore.create({
           name: name.value,
           country: country.value,
           category: category.value,
@@ -101,7 +95,7 @@ export default {
       if (filesList.length !== 1) {
         fileInput.value = null;
       }
-      await bulkImport(filesList[0]);
+      await fermentableStore.bulkImport(filesList[0]);
     }
     return {
       category,
@@ -109,16 +103,13 @@ export default {
       columns: ["name", "country", "category", "kind", "color", "ppg"],
       country,
       createFermentable,
-      fermentables,
-      fetch,
       fileImport,
       fileInput,
       kind,
-      modal,
       name,
       pending,
       ppg,
-      remove,
+      fermentableStore,
       tableFilter,
     };
   },

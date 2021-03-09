@@ -1,5 +1,6 @@
 import { keyBy, mapValues } from "lodash-es";
 import { reactive, readonly } from "vue";
+import { Requests, useRequests } from "./request";
 
 export interface BatchInfo {
   measurements: Record<string, number>;
@@ -9,13 +10,17 @@ export interface AbvInfo {
   measurements: Record<string, { abv: number }>;
 }
 
-export function createBatchStore(requests, batchId: number) {
-  const batchInfo: reactive<BatchInfo> = reactive({
+export function createBatchStore(batchId: number) {
+  const requests = useRequests();
+
+  const batchInfo = reactive<BatchInfo>({
     measurements: { targetFG: 1, targetOG: 1 },
   });
-  const abvInfo: reactive<AbvInfo> = reactive({
-    target: { abv: 0 },
-    actual: { abv: 0 },
+  const abvInfo = reactive<AbvInfo>({
+    measurements: {
+      target: { abv: 0 },
+      actual: { abv: 0 },
+    },
   });
 
   async function calculateAbv(originalGravity: number, finalGravity: number) {
@@ -40,13 +45,13 @@ export function createBatchStore(requests, batchId: number) {
       batchInfo.measurements.targetOG,
       batchInfo.measurements.targetFG
     );
-    abvInfo.target = targetAbv;
+    abvInfo.measurements.target = targetAbv;
 
     const actualAbv = await calculateAbv(
       batchInfo.measurements.actualOG,
       batchInfo.measurements.actualFG
     );
-    abvInfo.actual = actualAbv;
+    abvInfo.measurements.actual = actualAbv;
   }
 
   async function saveMeasurement(name: string, value: string) {

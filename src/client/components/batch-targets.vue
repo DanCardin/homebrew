@@ -93,20 +93,21 @@ import InputVolume from "./input-volume.vue";
 import { createBatchStore } from "../store/batch";
 import { useRequests } from "../store/request";
 import axios from "axios";
-import { reactive, ref } from "vue";
+import { reactive, ref, defineComponent } from "vue";
 
 interface Color {
   color: string;
 }
-export default {
+export default defineComponent({
   components: { InputAbv, InputGravity, InputVolume },
   props: {
-    batchId: Number,
+    batchId: {
+      type: Number,
+      required: true,
+    },
   },
   async setup(props) {
-    const requests = useRequests();
     const { batchInfo, abvInfo, fetch, saveMeasurement } = createBatchStore(
-      requests,
       props.batchId
     );
     await fetch();
@@ -156,7 +157,7 @@ export default {
       saveMeasurement,
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
