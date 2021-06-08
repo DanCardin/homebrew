@@ -1,5 +1,5 @@
 import axios from "axios";
-import { computed, inject, provide, reactive } from "vue";
+import { defineStore } from 'pinia';
 
 export interface Requests {
   pending: boolean;
@@ -10,51 +10,40 @@ export interface Requests {
   ): Promise<T>;
 }
 
-function createState() {
-  const state = reactive({ pendingRequests: new Map() });
-  const pendingRequests = state.pendingRequests;
+export const useRequests = defineStore({
+  id: 'requests',
+  state() {
+    return {
+      pendingRequests: new Map()
+    }
+  },
+  getters: {
+    pending(state) {
+      return state.pendingRequests.size &&
+        [...state.pendingRequests.values()].every((v) => v === true)
+    }
+  },
+  actions: {
+    set(key: string) {
+      return this.pendingRequests.set(key, true);
+    },
 
-  const pending = computed(
-    () =>
-      pendingRequests.size &&
-      [...pendingRequests.values()].every((v) => v === true)
-  );
+    unset(key: string) {
+      return this.pendingRequests.delete(key);
+    },
 
-  function set(key: string) {
-    return state.pendingRequests.set(key, true);
-  }
-
-  function unset(key: string) {
-    return state.pendingRequests.delete(key);
-  }
-
-  async function post<T>(
-    url: string,
-    body?: unknown,
-    options?: Record<string, unknown>
-  ): Promise<T> {
-    set(url);
-    try {
-      const { data } = await axios.post<T>(url, body, options);
-      return data;
-    } finally {
-      setTimeout(() => unset(url), 1000);
+    async post<T>(
+      url: string,
+      body?: unknown,
+      options?: Record<string, unknown>
+    ): Promise<T> {
+      this.set(url);
+      try {
+        const { data } = await axios.post<T>(url, body, options);
+        return data;
+      } finally {
+        setTimeout(() => this.unset(url), 1000);
+      }
     }
   }
-
-  return {
-    post,
-    pending,
-  };
-}
-
-export const requestsSymbol = Symbol("request");
-export const state = createState();
-export const provideRequests = () => provide(requestsSymbol, state);
-export const useRequests = () => {
-  const requests = inject<Requests>(requestsSymbol);
-  if (requests) {
-    return requests;
-  }
-  return createState();
-};
+})

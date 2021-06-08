@@ -1,67 +1,61 @@
 import { reactive, readonly, DeepReadonly } from "vue";
 import type { Fermentable } from "../types/fermentable";
 import { useRequests } from "./request";
+import { defineStore } from 'pinia';
 
 interface BatchFermentable {
   batchId: number;
   fermentableId: number;
 }
 
-export interface BatchIngredientStore<T> {
-  fetch(): T[];
-  create(unit: string): undefined;
-  remove(id: number): undefined;
-  update(id: number, ingredientId: number, amount: number): undefined;
+function batchIngredientStoreFactory(kind: string) {
+  return defineStore({
+    id: kind,
+    state() {
+      return {
+        batches: {},
+      }
+    },
+    actions: {
+      get(batchId: number) {
+        return this.batches[batchId];
+      },
 
-  items: DeepReadonly<T[]>;
+      async fetch(batchId: number) {
+        const requests = useRequests();
+        const data = await requests.post(`/api/beer/batch/${kind}/list`, {
+          batchId,
+        });
+        this.batches[batchId] = data;
+      },
+
+      async create(batchId: number, unit: string) {
+        const requests = useRequests();
+        await requests.post(`/api/beer/batch/${kind}/new`, {
+          batchId,
+          kind,
+          unit,
+        });
+        await this.fetch(batchId);
+      },
+
+      async remove(batchId: number, id: number) {
+        const requests = useRequests();
+        await requests.post(`/api/beer/batch/${kind}/delete`, { id });
+        await this.fetch(batchId);
+      },
+
+      async update(batchId: number, id: number, ingredientId: number, amount: number) {
+        const requests = useRequests();
+        await requests.post(`/api/beer/batch/${kind}/update`, {
+          id,
+          [`${kind}Id`]: ingredientId,
+          amount,
+        });
+        await this.fetch(batchId);
+      }
+    }
+  });
 }
 
-export function batchIngredientStoreFactory<I>(kind: string) {
-  return function (batchId: number): BatchIngredientStore<I> {
-    const requests = useRequests();
-
-    const items = reactive<I[]>([]);
-
-    async function fetch() {
-      const data = await requests.post<[]>(`/api/beer/batch/${kind}/list`, {
-        batchId,
-      });
-      items.splice(0, items.length, ...data);
-    }
-
-    async function create(unit: string) {
-      await requests.post<I>(`/api/beer/batch/${kind}/new`, {
-        batchId,
-        kind,
-        unit,
-      });
-      await fetch();
-    }
-
-    async function remove(id: number) {
-      await requests.post(`/api/beer/batch/${kind}/delete`, { id });
-      await fetch();
-    }
-
-    async function update(id: number, ingredientId: number, amount: number) {
-      await requests.post(`/api/beer/batch/${kind}/update`, {
-        id,
-        [`${kind}Id`]: ingredientId,
-        amount,
-      });
-      await fetch();
-    }
-
-    return {
-      remove,
-      fetch,
-      create,
-      update,
-      items: readonly(items),
-    };
-  };
-}
-
-export const createBatchFermentableStore = batchIngredientStoreFactory<
-  BatchFermentable
->("fermentable");
+export const useBatchFermentableStore = batchIngredientStoreFactory("fermentable");

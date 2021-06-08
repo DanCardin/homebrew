@@ -1,5 +1,5 @@
 <template lang="pug">
-nav.bg-gray-800
+nav.bg-gray-800.py-0
   .mx-auto.px-2
     .relative.flex.items-center.justify-between
       .flex.flex-1.items-center.justify-center.items-stretch.justify-start
@@ -7,7 +7,7 @@ nav.bg-gray-800
           router-link(to="/")
             span.sr-only Home
             img.h-10.w-auto(
-              src="favicon.svg",
+              src="/favicon.svg",
               width="32",
               height="32",
               loading="lazy"
@@ -19,11 +19,9 @@ nav.bg-gray-800
           router-link.m-2(to="/fermentables")
             img.w-auto.h-10.wheat(width="32", height="32")
 
-          fa.text-gray-300.h-10.w-10.my-2(
-            :style="{ opacity: requestPending ? '100%' : '0%' }",
-            icon="cog",
-            size="lg",
-            spin
+          cog-icon.text-gray-100.h-10.w-10.my-2(
+            :style="{ opacity: requests.pending ? '100%' : '0%' }",
+            :class="requests.pending ? 'animate-spin' : ''"
           )
 
 router-view
@@ -31,13 +29,14 @@ router-view
 
 <script lang="ts">
 import { useRequests } from "./store/request";
+import { CogIcon } from "@heroicons/vue/outline";
 
 export default {
+  components: { CogIcon },
   setup() {
     const requests = useRequests();
-    const requestPending = requests.pending;
 
-    return { requestPending };
+    return { requests };
   },
 };
 </script>

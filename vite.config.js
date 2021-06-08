@@ -1,15 +1,21 @@
-import path from "path";
-import vue from "@vitejs/plugin-vue";
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import path from 'path'
 
-module.exports = {
+export default defineConfig({
   plugins: [vue()],
-  alias: {
-    "/@client": path.resolve(__dirname, "src/client"),
-  },
-  proxy: {
-    "/api": {
-      target: "http://127.0.0.1:8000",
-      rewrite: (path) => path.replace(/^\/api/, ""),
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '/src'),
     },
   },
-};
+  server: {
+    open: true,
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8000",
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
+})

@@ -1,9 +1,9 @@
 <template lang="pug">
 suspense
-  beer-info(:beerId="beerId")
+  beer-info.m-2(:beerId="beerId")
 
 suspense
-  batches(:beerId="beerId")
+  batches.mx-2.my-4(:beerId="beerId")
 </template>
 
 <script lang="ts">

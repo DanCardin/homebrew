@@ -17,7 +17,7 @@ export function fermentablesStore() {
   });
 
   async function fetch() {
-    const { data } = await requests.post("/api/fermentable/list", {});
+    const data = await requests.post("/api/fermentable/list", {});
     state.items.splice(0, state.items.length, ...data);
   }
 

@@ -1,31 +1,36 @@
 <template lang="pug">
-.dropdown
-  input.dropdown-input(
+.relative.rounded-md.shadow-sm.text-gray-600.text-sm(class="focus-within:text-gray-400")
+  .absolute.inset-y-6.right-2.items-center.flex
+    search-icon.w-5.h-5
+  input#beerName.dropdown-input.block.w-full.px-4.text-sm.border-gray-300.rounded-md(
+    class="focus:ring-indigo-500 focus:border-indigo-500",
     v-show="!selectedItem",
     @focus="onFocus",
     @blur="onBlur",
     @input.stop="onInput($event.target.value)",
     type="text",
-    placeholder="Find"
-    ref="selectInput",
+    placeholder="Search...",
+    ref="selectInput"
   )
-  .dropdown-selected(v-show="!!selectedItem", @click="resetSelection")
-    span {{ selectedItem && selectedItem.name }}
-  .dropdown-list(v-show="opened", ref="dropdownList")
-    .dropdown-item(
-      v-for="item of items",
-      :key="item.id",
-      @click="selectItem(item)",
-      tabindex="0"
-    )
-      slot(:item="item" name="row")
+.dropdown-selected(v-show="!!selectedItem", @click="resetSelection")
+  span {{ selectedItem && selectedItem.name }}
+.dropdown-list(v-show="opened", ref="dropdownList")
+  .dropdown-item(
+    v-for="item of items",
+    :key="item.id",
+    @click="selectItem(item)",
+    tabindex="0"
+  )
+    slot(:item="item", name="row")
 </template>
 
 <script lang="ts">
 import { PropType, defineComponent, nextTick, reactive, ref } from "vue";
 import { debounce } from "lodash-es";
+import { SearchIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
+  components: { SearchIcon },
   props: {
     modelValue: Object,
     search: {
@@ -93,12 +98,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.dropdown {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
 .dropdown-input,
 .dropdown-selected {
   width: 100%;
@@ -121,7 +120,6 @@ export default defineComponent({
 }
 
 .dropdown-selected {
-  font-weight: bold;
   cursor: pointer;
 }
 

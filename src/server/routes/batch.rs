@@ -5,6 +5,7 @@ use num_traits::cast::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use sqlx;
 use sqlx::postgres::PgPool;
+use std::convert::TryFrom;
 use tracing;
 use tracing::info;
 
@@ -157,7 +158,7 @@ impl Batch {
             "#,
             batch_id,
             name,
-            sqlx::types::BigDecimal::from(value)
+            sqlx::types::BigDecimal::try_from(value).unwrap()
         )
         .fetch_one(db)
         .await?;

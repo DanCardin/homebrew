@@ -4,6 +4,7 @@ use num_traits::cast::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use sqlx;
 use sqlx::postgres::PgPool;
+use std::convert::TryFrom;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -94,7 +95,7 @@ impl BatchFermentable {
             "#,
             input.id,
             input.fermentable_id,
-            sqlx::types::BigDecimal::from(input.amount),
+            sqlx::types::BigDecimal::try_from(input.amount).unwrap(),
         )
         .fetch_one(db)
         .await?;

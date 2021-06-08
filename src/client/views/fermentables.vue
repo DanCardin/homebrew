@@ -1,41 +1,78 @@
 <template lang="pug">
-.container
-  .row
-    .col-3
-      button.btn.btn-success(@click="fileInput.click()", type="button") Import
-        input.file-upload(
-          @change="fileImport($event.target.name, $event.target.files)",
-          type="file",
-          ref="fileInput"
-        )
-    .col-3.offset-6
-      input.form-control(v-model="tableFilter", placeholder="Filter")
-  grid.align-middle(
-    @row-button-click="fermentableStore.remove",
-    :columns="columns",
-    :rows="fermentableStore.items",
-    :filterKey="tableFilter",
-    :rowButton="{ class: 'trash', key: 'id', icon: 'trash' }"
-  )
-    template(v-slot:firstRow)
-      td
-        input.form-control(v-model="name", placeholder="Name")
-      td
-        input.form-control(v-model="country", placeholder="Country")
-      td
-        input.form-control(v-model="category", placeholder="Category")
-      td
-        input.form-control(v-model="kind", placeholder="Kind")
-      td
-        input.form-control(v-model="color", placeholder="Color")
-      td
-        input.form-control(v-model="ppg", placeholder="PPG")
-      td
-        button.btn.create(
-          :class="pending ? '' : 'enabled'",
-          @click="createFermentable"
-        )
-          fa(icon="plus")
+.grid.grid-cols-12
+  .col-span-6
+    input.form-control.w-full.px-4.text-sm.border-gray-300.rounded-md(
+      class="focus:ring-indigo-500 focus:border-indigo-500",
+      v-model="tableFilter",
+      placeholder="Filter",
+      type="text"
+    )
+  .col-start-12.col-span-1
+    button.w-full.bg-blue-500.hover.text-white.font-bold.py-2.px-4(
+      @click="fileInput.click()",
+      type="button"
+    ) Import
+      input.file-upload(
+        @change="fileImport($event.target.name, $event.target.files)",
+        type="file",
+        ref="fileInput"
+      )
+grid(
+  @row-button-click="fermentableStore.remove",
+  :columns="columns",
+  :rows="fermentableStore.items",
+  :filterKey="tableFilter",
+  :rowButton="{ class: 'trash', key: 'id', icon: true }"
+)
+  template(v-slot:firstRow)
+    td
+      input.w-full.px-4.text-sm.border-gray-300.rounded-md(
+        class="focus:ring-indigo-500 focus:border-indigo-500",
+        v-model="name",
+        placeholder="Name",
+        type="text"
+      )
+    td
+      input.w-full.px-4.text-sm.border-gray-300.rounded-md(
+        class="focus:ring-indigo-500 focus:border-indigo-500",
+        v-model="country",
+        placeholder="Country",
+        type="text"
+      )
+    td
+      input.w-full.px-4.text-sm.border-gray-300.rounded-md(
+        class="focus:ring-indigo-500 focus:border-indigo-500",
+        v-model="category",
+        placeholder="Category",
+        type="text"
+      )
+    td
+      input.w-full.px-4.text-sm.border-gray-300.rounded-md(
+        class="focus:ring-indigo-500 focus:border-indigo-500",
+        v-model="kind",
+        placeholder="Kind",
+        type="text"
+      )
+    td
+      input.w-full.px-4.text-sm.border-gray-300.rounded-md(
+        class="focus:ring-indigo-500 focus:border-indigo-500",
+        v-model="color",
+        placeholder="Color",
+        type="text"
+      )
+    td
+      input.w-full.px-4.text-sm.border-gray-300.rounded-md(
+        class="focus:ring-indigo-500 focus:border-indigo-500",
+        v-model="ppg",
+        placeholder="PPG",
+        type="text"
+      )
+    td
+      button.btn.create(
+        :class="pending ? '' : 'enabled'",
+        @click="createFermentable"
+      )
+        plus-icon
 </template>
 
 <script lang="ts">
@@ -44,9 +81,10 @@ import { fermentablesStore } from "../store/fermentables";
 import { useRequests } from "../store/request";
 import { every } from "lodash-es";
 import { ref } from "vue";
+import { PlusIcon } from "@heroicons/vue/outline";
 
 export default {
-  components: { Grid },
+  components: { Grid, PlusIcon },
   setup() {
     const fermentableStore = fermentablesStore();
     const tableFilter = ref("");

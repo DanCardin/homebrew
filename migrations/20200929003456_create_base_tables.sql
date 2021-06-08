@@ -24,6 +24,7 @@ CREATE TABLE batch_measurement (
 CREATE TABLE batch_note (
     id SERIAL NOT NULL PRIMARY KEY,
     beer_id INTEGER NOT NULL,
+    target VARCHAR,
     value TEXT NOT NULL,
     CONSTRAINT fk_beer FOREIGN KEY (beer_id) REFERENCES beer(id)
 );

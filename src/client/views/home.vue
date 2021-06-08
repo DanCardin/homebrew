@@ -6,7 +6,7 @@
       @click="newBeer",
       class="hover:bg-gray-200 hover:text-gray-900"
     )
-      fa(icon="plus", size="xs")
+      plus-icon.h-5.w-5.inline
   div
     .bg-gray-100.px-4.py-5.grid.grid-cols-3.gap-4.px-6.border-b.border-gray-300.rounded-lg.mb-1.cursor-pointer(
       v-for="beer in beers",
@@ -19,11 +19,13 @@
 </template>
 
 <script lang="ts">
-import router from "../router";
-import { useBeerStore } from "../store/beer";
+import { router } from "@/client/routes";
+import { useBeerStore } from "@/client/store/beer";
 import { onMounted } from "vue";
+import { PlusIcon } from "@heroicons/vue/outline";
 
 export default {
+  components: { PlusIcon },
   setup() {
     const beerStore = useBeerStore();
     const beers = beerStore.state.beers;

@@ -1,27 +1,28 @@
 <template lang="pug">
-tr
-  td.p-0
-    search-select(
-      :selectedItem="fermentableStore.get(batchFermentable.fermentableId)",
-      :search="search",
-      @update:modelValue="selectFermentable"
+.col-span-3.m-2
+  search-select(
+    :selectedItem="fermentableStore.get(batchFermentable.fermentableId)",
+    :search="search",
+    @update:modelValue="selectFermentable"
+  )
+    template(v-slot:row="props")
+      span(v-if="props.item.country") {{ getUnicodeFlagIcon(props.item.country) }}
+      span {{ props.item.name }}
+.col-span-3.m-2
+  .relative.rounded-md.shadow-sm
+    input#actualSRMInput.block.w-full.pl-5.pr-1.text-sm.border-gray-300.rounded-md(
+      class="focus:ring-indigo-500 focus:border-indigo-500",
+      type="text",
+      :value="batchFermentable.amount",
+      @input.lazy="updateValue($event.target.value)"
     )
-      template(v-slot:row="props")
-        span(v-if="props.item.country") {{ getUnicodeFlagIcon(props.item.country) }}
-        span {{ props.item.name }}
-  td.p-0
-    .input-group.mb-3
-      input(
-        :value="batchFermentable.amount",
-        @input.lazy="updateValue($event.target.value)"
-      )
-      button.relative(type="button") V
-      .absolute
-        a.block.bg-blue Lb
-        a.block.bg-blue Oz
-  td.p-0
-    button.trash(@click="batchFermentableStore.remove(batchFermentable.id)")
-      fa(icon="trash")
+    .absolute.inset-y-0.right-2.pl-3.flex.items-center
+      select.text-sm.border-none(class="sm:text-tiny-heading")
+        option Lb
+        option Oz
+.col-span-1.m-2
+  button.trash(@click="batchFermentableStore.remove(batchFermentable.id)")
+    trash-icon.w-5.h-5
 </template>
 
 <script lang="ts">
@@ -29,9 +30,10 @@ import { PropType, defineComponent } from "vue";
 import type { Fermentable } from "../types/fermentable";
 import SearchSelect from "./search-select.vue";
 import getUnicodeFlagIcon from "country-flag-icons/unicode";
+import { TrashIcon } from "@heroicons/vue/outline";
 
 export default defineComponent({
-  components: { SearchSelect },
+  components: { SearchSelect, TrashIcon },
   props: {
     batchFermentableStore: {
       required: true,
@@ -70,9 +72,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped lang="scss">
-.table-input {
-  border: none;
-}
-</style>

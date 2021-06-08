@@ -1,14 +1,25 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
+/** @type {import("@types/tailwindcss/tailwind-config").TailwindConfig } */
 module.exports = {
+  mode: 'jit',
   purge: {
-    content: ["./public/**/*.html", "./src/**/*.vue"],
+    content: ["index.html", "./src/**/*.{vue,js,ts}"],
     options: {
-      extractors: ["purgecss-from-pug"],
+      // extractors: ["purgecss-from-pug"],
     },
   },
-  darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['"Inter var"', ...defaultTheme.fontFamily.sans],
+      },
+    },
   },
-  variants: {},
-  plugins: [],
-};
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/line-clamp'),
+    require('@tailwindcss/aspect-ratio'),
+  ],
+}

@@ -3,6 +3,7 @@ use num_traits::cast::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use sqlx;
 use sqlx::postgres::PgPool;
+use std::convert::TryFrom;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -54,7 +55,7 @@ impl Fermentable {
             new.category,
             new.kind,
             new.color,
-            sqlx::types::BigDecimal::from(new.ppg)
+            sqlx::types::BigDecimal::try_from(new.ppg).unwrap()
         )
         .fetch_one(db)
         .await?;
@@ -91,7 +92,7 @@ impl Fermentable {
                 categories.push(row.category);
                 kinds.push(row.kind);
                 colors.push(row.color);
-                ppgs.push(sqlx::types::BigDecimal::from(row.ppg));
+                ppgs.push(sqlx::types::BigDecimal::try_from(row.ppg).unwrap());
             }
             (names, countries, categories, kinds, colors, ppgs)
         }

@@ -1,105 +1,168 @@
 <template lang="pug">
-table.col.table.table-bordered
-  thead
-    tr
-      th OG
-      th FG
-      th ABV
-      th IBU
-      th SRM
-      th Volume
-  tbody
-    tr.text-uppercase
-      td.p-1
-        .d-flex.text-sm.text-secondary
-          .mx-1
-            input-gravity(
-              @change.lazy="saveMeasurement('targetOG', $event.target.value)",
-              :value="batchInfo.measurements.targetOG",
-              label="Target"
-            )
-          .mx-1
-            input-gravity(
-              @change.lazy="saveMeasurement('actualOG', $event.target.value)",
-              :value="batchInfo.measurements.actualOG",
-              label="Actual"
-            )
-      td.p-1
-        .d-flex.text-sm.text-secondary
-          .mx-1
-            input-gravity(
-              @change.lazy="saveMeasurement('targetFG', $event.target.value)",
-              :value="batchInfo.measurements.targetFG",
-              label="Target"
-            )
-          .mx-1
-            input-gravity(
-              @change.lazy="saveMeasurement('actualFG', $event.target.value)",
-              :value="batchInfo.measurements.actualFG",
-              label="Actual"
-            )
-      td.p-1
-        .d-flex.text-sm.text-secondary
-          .mx-1
-            input-abv(:value="abvInfo.target.abv", label="Target")
-          .mx-1
-            input-abv(:value="abvInfo.actual.abv", label="Actual")
-      td.p-1
-        .d-flex.text-sm.text-secondary
-          .mx-1
-            label.mb-0(for="targetIBUInput") Target
-            input#targetIBUInput.form-control.ibu
-          .mx-1
-            label.mb-0(for="actualIBUInput") Actual
-            input#actualIBUInput.form-control.ibu
-      td.p-1
-        .d-flex.text-sm.text-secondary
-          .mx-1
-            label.mb-0(for="targetSRMInput") Target
-            input#targetSRMInput.form-control.srm(
-              v-model="targetSRM",
-              @input="targetSRMInput"
-            )
-            span(:style="targetSRMHex")
-              fa(icon="beer")
-          .mx-1
-            label.mb-0(for="actualSRMInput") Actual
-            input#actualSRMInput.form-control.srm(
-              v-model="actualSRM",
-              @input="actualSRMInput"
-            )
-            span(:style="actualSRMHex")
-              fa(icon="beer")
-      td.p-1
-        .d-flex.text-sm.text-secondary
-          .mx-1
-            input-volume(
-              @change.lazy="saveMeasurement('targetVolume', $event.target.value)",
-              :value="batchInfo.measurements.targetVolume",
-              label="Target"
-            )
-          .mx-1
-            input-volume(
-              @change.lazy="saveMeasurement('actualVolume', $event.target.value)",
-              :value="batchInfo.measurements.actualVolume",
-              label="Actual"
-            )
+h3.text-center.text-lg.leading-6.font-medium.text-gray-900.mb-3.uppercase
+  .relative.w-full Targets
+    span.absolute.right-0(v-if="batchStore.unusedSections(batchId).length")
+      span &nbsp;(&nbsp;
+      button.font-normal.text-sm.uppercase.text-blue-500(
+        v-for="s of batchStore.unusedSections(batchId)",
+        @click="batchStore.enableSection(batchId, s.name)"
+      ) {{ s.name }}&nbsp;
+      span )
+
+.flex.flex-nowrap.text-center.py-2.justify-evenly
+  .text-tiny-heading(v-show="batchStore.sectionEnabled(batchId, 'og')")
+    .relative OG
+      button.w-4.h-4.mr-2.mt-1.absolute.right-0(
+        @click="batchStore.disableSection(batchId, 'og')"
+      )
+        trash-icon.w-full.h-full.text-red-500
+    .mx-1
+      input-gravity(
+        @change.lazy="batchStore.saveMeasurement(batchId, 'target', 'og', $event.target.value)",
+        :value="batchStore.getMeasurement(batchId, 'target', 'og')",
+        label="Target"
+      )
+    .mx-1
+      input-gravity(
+        @change.lazy="batchStore.saveMeasurement(batchId, 'actual', 'og', $event.target.value)",
+        :value="batchStore.getMeasurement(batchId, 'actual', 'og')",
+        label="Actual"
+      )
+
+  .text-tiny-heading.text-secondary(
+    v-show="batchStore.sectionEnabled(batchId, 'fg')"
+  )
+    .relative FG
+      button.w-4.h-4.mr-2.mt-1.absolute.right-0(
+        @click="batchStore.disableSection(batchId, 'fg')"
+      )
+        trash-icon.w-full.h-full.text-red-500
+    .mx-1
+      input-gravity(
+        @change.lazy="batchStore.saveMeasurement(batchId, 'target', 'fg', $event.target.value)",
+        :value="batchStore.getMeasurement(batchId, 'target', 'fg')",
+        label="Target"
+      )
+    .mx-1
+      input-gravity(
+        @change.lazy="batchStore.saveMeasurement(batchId, 'actual', 'fg', $event.target.value)",
+        :value="batchStore.getMeasurement(batchId, 'actual', 'fg')",
+        label="Actual"
+      )
+
+  .text-tiny-heading.text-secondary(
+    v-show="batchStore.sectionEnabled(batchId, 'abv')"
+  )
+    .relative ABV
+      button.w-4.h-4.float-right.mr-2.mt-1.absolute.right-0(
+        @click="batchStore.disableSection(batchId, 'abv')"
+      )
+        trash-icon.w-full.h-full.text-red-500
+    .mx-1
+      input-abv(
+        :value="batchStore.getMeasurement(batchId, 'target', 'abv')",
+        label="Target"
+      )
+    .mx-1
+      input-abv(
+        :value="batchStore.getMeasurement(batchId, 'actual', 'abv')",
+        label="Actual"
+      )
+
+  .text-tiny-heading.text-secondary(
+    v-show="batchStore.sectionEnabled(batchId, 'ibu')"
+  )
+    .relative IBU
+      button.w-4.h-4.float-right.mr-2.mt-1.absolute.right-0(
+        @click="batchStore.disableSection(batchId, 'ibu')"
+      )
+        trash-icon.w-full.h-full.text-red-500
+    .mx-1
+      label.mb-0(for="targetIBUInput") Target
+      input#targetIBUInput.ibu.block.w-full.px-1.text-sm.border-gray-300.rounded-md(
+        class="focus:ring-indigo-500 focus:border-indigo-500",
+        type="number"
+      )
+    .mx-1
+      label.mb-0(for="actualIBUInput") Actual
+      input#actualIBUInput.ibu.block.w-full.px-1.text-sm.border-gray-300.rounded-md(
+        class="focus:ring-indigo-500 focus:border-indigo-500",
+        type="number"
+      )
+
+  .text-tiny-heading.text-secondary(
+    v-show="batchStore.sectionEnabled(batchId, 'srm')"
+  )
+    .relative SRM
+      button.w-4.h-4.float-right.mr-2.mt-1.absolute.right-0(
+        @click="batchStore.disableSection(batchId, 'srm')"
+      )
+        trash-icon.w-full.h-full.text-red-500
+    .mx-1
+      label.mb-0(for="targetSRMInput") Target
+      .relative.rounded-md.shadow-sm
+        .absolute.inset-y-0.left-0.pl-3.flex.items-center.pointer-events-none
+          .text-gray-500(class="sm:text-tiny-heading")
+            beaker-icon.w-5.h-5(:style="targetSRMHex")
+        input#targetSRMInput.srm.abv.block.w-full.pl-10.pr-1.text-sm.border-gray-300.rounded-md(
+          class="focus:ring-indigo-500 focus:border-indigo-500",
+          v-model="targetSRM",
+          @input="targetSRMInput",
+          type="number"
+        )
+
+    .mx-1
+      label.mb-0(for="actualSRMInput") Actual
+      .relative.rounded-md.shadow-sm
+        .absolute.inset-y-0.left-0.pl-3.flex.items-center.pointer-events-none
+          .text-gray-500(class="sm:text-tiny-heading")
+            beaker-icon.w-5.h-5(:style="actualSRMHex")
+        input#actualSRMInput.srm.abv.block.w-full.pl-10.pr-1.text-sm.border-gray-300.rounded-md(
+          class="focus:ring-indigo-500 focus:border-indigo-500",
+          v-model="actualSRM",
+          @input="actualSRMInput",
+          type="number"
+        )
+
+  .text-tiny-heading.text-secondary(
+    v-show="batchStore.sectionEnabled(batchId, 'vol')"
+  )
+    .relative Volume
+      button.w-4.h-4.float-right.mr-2.mt-1.absolute.right-0(
+        @click="batchStore.disableSection(batchId, 'vol')"
+      )
+        trash-icon.w-full.h-full.text-red-500
+    .mx-1
+      input-volume(
+        @change.lazy="batchStore.saveMeasurement(batchId, 'target', 'vol', $event.target.value)",
+        :value="batchStore.getMeasurement(batchId, 'target', 'vol')",
+        label="Target"
+      )
+    .mx-1
+      input-volume(
+        @change.lazy="batchStore.saveMeasurement(batchId, 'actual', 'vol', $event.target.value)",
+        :value="batchStore.getMeasurement(batchId, 'actual', 'vol')",
+        label="Actual"
+      )
 </template>
 
 <script lang="ts">
 import InputAbv from "./input-abv.vue";
 import InputGravity from "./input-gravity.vue";
 import InputVolume from "./input-volume.vue";
-import { createBatchStore } from "../store/batch";
+import { useBatchStore } from "../store/batch";
 import { useRequests } from "../store/request";
 import axios from "axios";
-import { reactive, ref, defineComponent } from "vue";
+import { reactive, ref, defineComponent, readonly, computed } from "vue";
+import { BeakerIcon, TrashIcon } from "@heroicons/vue/outline";
+import { filter, find } from "lodash-es";
 
 interface Color {
   color: string;
 }
+
 export default defineComponent({
-  components: { InputAbv, InputGravity, InputVolume },
+  components: { InputAbv, InputGravity, InputVolume, BeakerIcon, TrashIcon },
   props: {
     batchId: {
       type: Number,
@@ -107,15 +170,9 @@ export default defineComponent({
     },
   },
   async setup(props) {
-    const { batchInfo, abvInfo, fetch, saveMeasurement } = createBatchStore(
-      props.batchId
-    );
-    await fetch();
+    const batchStore = useBatchStore();
+    await batchStore.fetch(props.batchId);
 
-    const actualOG = ref("1");
-    const actualFG = ref("1");
-    const targetIBU = ref("");
-    const actualIBU = ref("");
     const targetSRM = ref("");
     const actualSRM = ref("");
     const targetSRMHex = reactive<Color>({ color: "" });
@@ -124,44 +181,40 @@ export default defineComponent({
     const targetSRMInput = async () => {
       let color = "#000000";
       if (targetSRM.value) {
-        const response = await axios.post("/api/srm.convert", {
+        const response = await axios.post("/api/measurement/srm/to_hex", {
           value: +targetSRM.value,
         });
         color = response.data.value;
       }
       targetSRMHex.color = color;
     };
+
     const actualSRMInput = async () => {
       let color = "#000000";
       if (actualSRM.value) {
-        const response = await axios.post("/api/srm.convert", {
+        const response = await axios.post("/api/measurement/srm/to_hex", {
           value: +actualSRM.value,
         });
         color = response.data.value;
       }
       actualSRMHex.color = color;
     };
+
     return {
       actualSRMInput,
       targetSRMInput,
-      actualOG,
-      actualFG,
-      targetIBU,
-      actualIBU,
       targetSRM,
       actualSRM,
       targetSRMHex,
       actualSRMHex,
-      abvInfo,
-      batchInfo,
-      saveMeasurement,
+      batchStore,
     };
   },
 });
 </script>
 
 <style scoped lang="scss">
-.text-sm {
+.text-tiny-heading {
   font-size: 0.6em;
 }
 .ibu {

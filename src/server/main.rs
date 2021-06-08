@@ -23,7 +23,7 @@ fn json_error_handler(
         }
         _ => HttpResponse::BadRequest().body(detail),
     };
-    actix_web::error::InternalError::from_response(err, resp).into()
+    actix_web::error::InternalError::from_response(err, resp.into()).into()
 }
 
 #[actix_web::main]
@@ -37,6 +37,7 @@ async fn main() -> std::io::Result<()> {
     let configuration = config::get_config().expect("Failed to read configuration.");
 
     let mut listenfd = ListenFd::from_env();
+    println!("{}", configuration.database.connection_string());
     let connection = PgPool::connect(&configuration.database.connection_string())
         .await
         .expect("Failed to connect to Postgres.");
@@ -45,7 +46,7 @@ async fn main() -> std::io::Result<()> {
     let mut server = HttpServer::new(move || {
         App::new()
             .app_data(web::JsonConfig::default().error_handler(json_error_handler))
-            .wrap(TracingLogger)
+            .wrap(TracingLogger::default())
             .app_data(connection.clone())
             .route("/health", web::get().to(routes::check_health))
             .service(
@@ -91,8 +92,6 @@ async fn main() -> std::io::Result<()> {
                                         "update",
                                         web::post().to(routes::batch::fermentable::update),
                                     )
-
-
                                     .route(
                                         "delete",
                                         web::post().to(routes::batch::fermentable::delete),

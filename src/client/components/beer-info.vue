@@ -1,18 +1,23 @@
 <template lang="pug">
 .m-2
   h3.text-lg.leading-6.font-medium.text-gray-900.mb-3.uppercase Beer Info
-  .mt-1.relative.rounded-md.shadow-sm
-    .block.text-sm.font-medium.text-gray-700 Beer Name
-    .absolute.flex.items-center
-      input#beerName.block.w-full.pl-7.pr-12.text-sm.border-gray-300.rounded-md(
+  .mt-1.relative.rounded-md.shadow-sm.grid.grid-cols-2.gap-4
+    div
+      label.block.text-sm.font-medium.text-gray-700(for="beerStyle") Name
+      input#beerName.block.w-full.px-4.text-sm.border-gray-300.rounded-md(
         class="focus:ring-indigo-500 focus:border-indigo-500",
         type="text",
         v-model.lazy="name",
         @blur="changeInfo"
       )
-      .col.text-right
-        span(for="beerStyle") Style
-        input#beerStyle.form-control(v-model.lazy="style", @blur="changeInfo")
+    .text-right
+      label.block.text-sm.font-medium.text-gray-700(for="beerStyle") Style
+      input#beerStyle.text-right.block.w-full.px-4.text-sm.border-gray-300.rounded-md(
+        class="focus:ring-indigo-500 focus:border-indigo-500",
+        type="text",
+        v-model.lazy="style",
+        @blur="changeInfo"
+      )
 </template>
 
 <script lang="ts">

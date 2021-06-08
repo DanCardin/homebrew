@@ -1,5 +1,5 @@
 use actix_multipart::MultipartError;
-use actix_web::{dev::HttpResponseBuilder, error, http::StatusCode, HttpResponse};
+use actix_web::{body::Body, error, http::StatusCode, BaseHttpResponse, HttpResponseBuilder};
 use derive_more::{Display, Error};
 use serde::Serialize;
 use std::borrow::Cow;
@@ -62,14 +62,16 @@ impl<'a> error::ResponseError for ApiError {
         }
     }
 
-    fn error_response(&self) -> HttpResponse {
+    fn error_response(&self) -> BaseHttpResponse<Body> {
         let status_code = self.status_code();
         let error_response = ErrorResponse {
             code: status_code.as_u16(),
             message: self.reason(),
             error: self.name(),
         };
-        HttpResponseBuilder::new(self.status_code()).json(error_response)
+        HttpResponseBuilder::new(self.status_code())
+            .json(error_response)
+            .into()
     }
 }
 

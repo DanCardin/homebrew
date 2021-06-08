@@ -1,6 +1,7 @@
 <template lang="pug">
 label.mb-0 {{ label }}
-input.volume.form-control(
+input.volume.abv.block.w-full.px-1.text-sm.border-gray-300.rounded-md(
+  class="focus:ring-indigo-500 focus:border-indigo-500",
   v-model="localValue",
   v-bind="$attrs",
   type="number",
@@ -11,7 +12,7 @@ input.volume.form-control(
 </template>
 
 <script lang="ts">
-import { computed, defineComponent} from "vue";
+import { computed, defineComponent } from "vue";
 
 export default defineComponent({
   props: {

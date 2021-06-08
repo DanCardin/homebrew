@@ -8,7 +8,6 @@ use bytes::buf::BufExt;
 use futures::TryStreamExt;
 use sqlx;
 use sqlx::postgres::PgPool;
-use std::convert::Infallible;
 use tracing;
 
 #[tracing::instrument(skip(db))]
@@ -38,13 +37,13 @@ pub async fn import(db: Data<PgPool>, mut payload: Multipart) -> Result<Json<()>
     let reader = bytes.reader();
     let mut rdr = csv::Reader::from_reader(reader);
 
-    let result: Result<(Vec<NewFermentable>, Vec<csv::Error>), BlockingError<Infallible>> =
+    let result: Result<(Vec<NewFermentable>, Vec<csv::Error>), BlockingError> =
         web::block(move || {
             let (fermentables, errors): (Vec<_>, Vec<_>) =
                 rdr.deserialize().partition(Result::is_ok);
             let numbers: Vec<_> = fermentables.into_iter().map(Result::unwrap).collect();
             let errors: Vec<_> = errors.into_iter().map(Result::unwrap_err).collect();
-            Ok((numbers, errors))
+            (numbers, errors)
         })
         .await;
 

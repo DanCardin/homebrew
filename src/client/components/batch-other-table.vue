@@ -17,7 +17,7 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
 import BatchFermentableRow from "./batch-fermentable-row.vue";
-import { useBatchFermentableStore } from "../store/batchIngredient";
+import { createBatchFermentableStore } from "../store/batchIngredient";
 import { fermentablesStore } from "../store/fermentables";
 import { isNull, keyBy, reject } from "lodash-es";
 import { PlusIcon } from "@heroicons/vue/outline";
@@ -31,14 +31,14 @@ export default defineComponent({
     },
   },
   async setup(props) {
-    const batchFermentableStore = useBatchFermentableStore();
+    const batchFermentableStore = createBatchFermentableStore(props.batchId);
 
     const fermentableStore = fermentablesStore();
 
-    await batchFermentableStore.fetch(props.batchId);
+    await batchFermentableStore.fetch();
     await fermentableStore.search({
       ids: reject(
-        batchFermentableStore.get(props.batchId).map((r) => r.fermentableId),
+        batchFermentableStore.items.map((r) => r.fermentableId),
         isNull
       ),
     });
@@ -47,7 +47,7 @@ export default defineComponent({
       batchFermentableStore,
       fermentableStore,
       create: async (unit: string) => {
-        await batchFermentableStore.create(props.batchId, unit);
+        await batchFermentableStore.create(unit);
       },
     };
   },

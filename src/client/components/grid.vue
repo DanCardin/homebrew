@@ -1,15 +1,15 @@
 <template lang="pug">
-table.table.table-bordered
+table.table.table-auto
   thead
     tr
-      th(
+      th.text-left(
         v-for="key of columns",
         :key="key",
         @click="sort(key)",
-        :class="sortKey == key ? 'active': ''"
+        :class="sortKey == key ? 'active' : ''"
       )
-        span.text-uppercase {{ key }}
-        span.arrow(:class="desc ? 'desc': 'asc'")
+        span.uppercase {{ key }}
+        span.arrow(:class="desc ? 'desc' : 'asc'")
       th(v-if="rowButton")
   tbody
     tr
@@ -18,7 +18,10 @@ table.table.table-bordered
       td(v-for="key in columns")
         span {{ entry[key] }}
       td(v-if="rowButton")
-        button.btn(:class="rowButton.class", @click="clickAction(entry[rowButton.key])")
+        button.btn(
+          :class="rowButton.class",
+          @click="clickAction(entry[rowButton.key])"
+        )
           fa(v-if="rowButton.icon", :icon="rowButton.icon")
 </template>
 

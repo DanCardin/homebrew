@@ -47,7 +47,7 @@ export default defineComponent({
       batchFermentableStore,
       fermentableStore,
       create: async (unit: string) => {
-        await batchFermentableStore.create(props.batchId, unit);
+        await batchFermentableStore.create(unit);
       },
     };
   },
