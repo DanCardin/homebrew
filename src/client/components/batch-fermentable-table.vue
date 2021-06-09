@@ -6,9 +6,9 @@
     plus-icon.h-5.w-5.inline
 
   batch-fermentable-row(
-    v-for="item of batchFermentableStore.items",
+    v-for="item of batchFermentableStore.get(batchId)",
+    :batchId="batchId",
     :batchFermentable="item",
-    :batchFermentableStore="batchFermentableStore",
     :fermentableStore="fermentableStore",
     :key="item.id"
   )

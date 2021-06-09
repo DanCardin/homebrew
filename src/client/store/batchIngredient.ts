@@ -45,15 +45,16 @@ function batchIngredientStoreFactory(kind: string) {
         await this.fetch(batchId);
       },
 
-      async update(batchId: number, id: number, ingredientId: number, amount: number) {
+      async update(batchId: number, id: number, ingredientId: number, amount: number, unit: string) {
         const requests = useRequests();
         await requests.post(`/api/beer/batch/${kind}/update`, {
           id,
           [`${kind}Id`]: ingredientId,
           amount,
+          unit,
         });
         await this.fetch(batchId);
-      }
+      },
     }
   });
 }

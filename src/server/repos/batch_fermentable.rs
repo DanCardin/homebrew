@@ -24,6 +24,7 @@ pub struct BatchFermentableUpdate {
     pub id: i32,
     pub fermentable_id: Option<i32>,
     pub amount: f64,
+    pub unit: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -34,6 +35,7 @@ pub struct BatchFermentable {
     pub fermentable_id: Option<i32>,
     pub amount: f64,
     pub time: Option<String>,
+    pub unit: Option<String>,
 }
 
 impl BatchFermentable {
@@ -44,7 +46,7 @@ impl BatchFermentable {
             DbBatchFermentable,
             r#"
             INSERT INTO batch_fermentable (batch_id) VALUES ($1)
-            RETURNING id, batch_id, fermentable_id, amount, time
+            RETURNING id, batch_id, fermentable_id, amount, time, unit
             "#,
             input.batch_id,
         )
@@ -70,7 +72,7 @@ impl BatchFermentable {
         let db_ingredients = sqlx::query_as!(
             DbBatchFermentable,
             r#"
-            SELECT id, batch_id, fermentable_id, amount, time FROM batch_fermentable
+            SELECT id, batch_id, fermentable_id, amount, time, unit FROM batch_fermentable
             WHERE batch_id = $1
             ORDER BY id
             "#,
@@ -89,13 +91,14 @@ impl BatchFermentable {
             DbBatchFermentable,
             r#"
             UPDATE batch_fermentable
-            SET fermentable_id=$2, amount=$3
+            SET fermentable_id=$2, amount=$3, unit=$4
             WHERE id = $1
-            RETURNING id, batch_id, fermentable_id, amount, time
+            RETURNING id, batch_id, fermentable_id, amount, time, unit
             "#,
             input.id,
             input.fermentable_id,
             sqlx::types::BigDecimal::try_from(input.amount).unwrap(),
+            input.unit,
         )
         .fetch_one(db)
         .await?;
@@ -111,6 +114,7 @@ struct DbBatchFermentable {
     pub fermentable_id: Option<i32>,
     pub amount: sqlx::types::BigDecimal,
     pub time: Option<chrono::NaiveTime>,
+    pub unit: Option<String>,
 }
 
 impl From<DbBatchFermentable> for BatchFermentable {
@@ -121,6 +125,7 @@ impl From<DbBatchFermentable> for BatchFermentable {
             fermentable_id: m.fermentable_id,
             amount: m.amount.to_f64().unwrap_or(0.),
             time: m.time.map(|t| t.to_string()),
+            unit: m.unit,
         }
     }
 }

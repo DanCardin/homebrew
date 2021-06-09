@@ -17,26 +17,32 @@
       @input.lazy="updateValue($event.target.value)"
     )
     .absolute.inset-y-0.right-2.pl-3.flex.items-center
-      select.text-sm.border-none(class="sm:text-tiny-heading")
-        option Lb
-        option Oz
+      select.text-sm.border-none.text-tiny-heading(
+        :value="batchFermentable.unit",
+        @change="updateUnit($event.target.value)"
+      )
+        option(value="") ...
+        option(value="lb") Lb
+        option(value="oz") Oz
 .col-span-1.m-2
-  button.trash(@click="batchFermentableStore.remove(batchFermentable.id)")
-    trash-icon.w-5.h-5
+  button(@click="batchFermentableStore.remove(batchId, batchFermentable.id)")
+    trash-icon.w-5.h-5.text-red-500
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent } from "vue";
+import { PropType, defineComponent, ref } from "vue";
 import type { Fermentable } from "../types/fermentable";
 import SearchSelect from "./search-select.vue";
 import getUnicodeFlagIcon from "country-flag-icons/unicode";
 import { TrashIcon } from "@heroicons/vue/outline";
+import { useBatchFermentableStore } from "../store/batchIngredient";
 
 export default defineComponent({
   components: { SearchSelect, TrashIcon },
   props: {
-    batchFermentableStore: {
+    batchId: {
       required: true,
+      type: Number,
     },
     fermentableStore: {
       required: true,
@@ -47,27 +53,49 @@ export default defineComponent({
     },
   },
   setup(props) {
-    async function updateValue(value: string) {
-      await props.batchFermentableStore.update(
-        props.batchFermentable.id,
-        props.batchFermentable.fermentableId,
-        +value
-      );
-    }
+    const batchFermentableStore = useBatchFermentableStore();
 
-    async function selectFermentable(selection) {
-      await props.batchFermentableStore.update(
-        props.batchFermentable.id,
-        selection.id,
-        props.batchFermentable.amount
-      );
-    }
+    const selectedUnit = ref("");
 
     return {
-      search: (query: string) => props.fermentableStore.search({ query }),
-      selectFermentable,
-      updateValue,
+      search(query: string) {
+        props.fermentableStore.search({ query });
+      },
+
+      async selectFermentable(selection) {
+        await batchFermentableStore.update(
+          props.batchId,
+          props.batchFermentable.id,
+          selection && selection.id,
+          props.batchFermentable.amount
+        );
+      },
+
+      async updateValue(value: string) {
+        let actualValue = !!value ? +value : null;
+
+        await batchFermentableStore.update(
+          props.batchId,
+          props.batchFermentable.id,
+          props.batchFermentable.fermentableId,
+          actualValue,
+          props.batchFermentable.unit
+        );
+      },
+
+      async updateUnit(value: string) {
+        await batchFermentableStore.update(
+          props.batchId,
+          props.batchFermentable.id,
+          props.batchFermentable.fermentableId,
+          props.batchFermentable.amount,
+          value
+        );
+      },
+
       getUnicodeFlagIcon,
+      batchFermentableStore,
+      selectedUnit,
     };
   },
 });
