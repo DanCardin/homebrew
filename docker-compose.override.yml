@@ -1,0 +1,28 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  nginx:
+    volumes:
+      - "./nginx/default.conf:/etc/nginx/sites-enabled/default.conf"
+
+  web:
+    entrypoint: "systemfd --no-pid -s http::8000 -- watchexec -r --exts rs,toml cargo run | jq -R 'fromjson?'"
+    volumes:
+      - "./homebrew-web:/code"
+
+  ui:
+    entrypoint: "npm run dev"
+    volumes:
+      - "./homebrew-ui:/code"
+
+volumes:
+  postgres:
+    driver: local

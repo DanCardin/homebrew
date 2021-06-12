@@ -1,14 +1,14 @@
 version: '3'
 services:
-  postgres:
-    image: postgres:10-alpine
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=postgres
+      - "${NGINX_PORT:-6272}:80"
 
-volumes:
-  postgres:
-    driver: local
+  web:
+    build:
+      context: homebrew-web
+    ports:
+      - "${WEB_PORT:-6273}:8000"
