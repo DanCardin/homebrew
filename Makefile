@@ -22,6 +22,12 @@ fix:  ## Automatically fix formatting related linter errors
 test:  ## Run all tests
 	cargo test
 
+run-api:
+	systemfd --no-pid -s http::8000 -- watchexec -r --exts rs,toml cargo run | jq -R 'fromjson?'
+
+run-ui:
+	npm run dev
+
 build:  ## Build the project
 	npm run build
 	cargo build

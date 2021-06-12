@@ -83,10 +83,6 @@ async fn main() -> std::io::Result<()> {
                             .service(
                                 web::scope("fermentable")
                                     .route("new", web::post().to(routes::batch::fermentable::new))
-                                    .route(
-                                        "delete",
-                                        web::post().to(routes::batch::fermentable::delete),
-                                    )
                                     .route("list", web::post().to(routes::batch::fermentable::list))
                                     .route(
                                         "update",
@@ -96,6 +92,13 @@ async fn main() -> std::io::Result<()> {
                                         "delete",
                                         web::post().to(routes::batch::fermentable::delete),
                                     ),
+                            )
+                            .service(
+                                web::scope("note")
+                                    .route("new", web::post().to(routes::batch::note::new))
+                                    .route("list", web::post().to(routes::batch::note::list))
+                                    .route("update", web::post().to(routes::batch::note::update))
+                                    .route("delete", web::post().to(routes::batch::note::delete)),
                             ),
                     ),
             )

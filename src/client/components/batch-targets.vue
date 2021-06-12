@@ -16,16 +16,20 @@ h3.text-center.text-lg.leading-6.font-medium.text-gray-900.mb-3.uppercase
         @click="batchStore.disableSection(batchId, 'og')"
       )
         trash-icon.w-full.h-full.text-red-500
-    .mx-1
+    .mx-1.relative
       input-gravity(
         @change.lazy="batchStore.saveMeasurement(batchId, 'target', 'og', $event.target.value)",
+        :batchId="batchId",
         :value="batchStore.getMeasurement(batchId, 'target', 'og')",
+        target="target.og",
         label="Target"
       )
     .mx-1
       input-gravity(
         @change.lazy="batchStore.saveMeasurement(batchId, 'actual', 'og', $event.target.value)",
         :value="batchStore.getMeasurement(batchId, 'actual', 'og')",
+        :batchId="batchId",
+        target="actual.og",
         label="Actual"
       )
 
@@ -41,12 +45,16 @@ h3.text-center.text-lg.leading-6.font-medium.text-gray-900.mb-3.uppercase
       input-gravity(
         @change.lazy="batchStore.saveMeasurement(batchId, 'target', 'fg', $event.target.value)",
         :value="batchStore.getMeasurement(batchId, 'target', 'fg')",
+        :batchId="batchId",
+        target="target.fg",
         label="Target"
       )
     .mx-1
       input-gravity(
         @change.lazy="batchStore.saveMeasurement(batchId, 'actual', 'fg', $event.target.value)",
         :value="batchStore.getMeasurement(batchId, 'actual', 'fg')",
+        :batchId="batchId",
+        target="actual.fg",
         label="Actual"
       )
 
@@ -61,11 +69,13 @@ h3.text-center.text-lg.leading-6.font-medium.text-gray-900.mb-3.uppercase
     .mx-1
       input-abv(
         :value="batchStore.getMeasurement(batchId, 'target', 'abv')",
+        :batchId="batchId",
         label="Target"
       )
     .mx-1
       input-abv(
         :value="batchStore.getMeasurement(batchId, 'actual', 'abv')",
+        :batchId="batchId",
         label="Actual"
       )
 
@@ -136,12 +146,14 @@ h3.text-center.text-lg.leading-6.font-medium.text-gray-900.mb-3.uppercase
       input-volume(
         @change.lazy="batchStore.saveMeasurement(batchId, 'target', 'vol', $event.target.value)",
         :value="batchStore.getMeasurement(batchId, 'target', 'vol')",
+        :batchId="batchId",
         label="Target"
       )
     .mx-1
       input-volume(
         @change.lazy="batchStore.saveMeasurement(batchId, 'actual', 'vol', $event.target.value)",
         :value="batchStore.getMeasurement(batchId, 'actual', 'vol')",
+        :batchId="batchId",
         label="Actual"
       )
 </template>
@@ -150,6 +162,7 @@ h3.text-center.text-lg.leading-6.font-medium.text-gray-900.mb-3.uppercase
 import InputAbv from "./input-abv.vue";
 import InputGravity from "./input-gravity.vue";
 import InputVolume from "./input-volume.vue";
+import Note from "./note.vue";
 import { useBatchStore } from "../store/batch";
 import { useRequests } from "../store/request";
 import axios from "axios";
@@ -162,7 +175,14 @@ interface Color {
 }
 
 export default defineComponent({
-  components: { InputAbv, InputGravity, InputVolume, BeakerIcon, TrashIcon },
+  components: {
+    InputAbv,
+    InputGravity,
+    InputVolume,
+    BeakerIcon,
+    TrashIcon,
+    Note,
+  },
   props: {
     batchId: {
       type: Number,

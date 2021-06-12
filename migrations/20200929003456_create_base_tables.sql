@@ -20,11 +20,3 @@ CREATE TABLE batch_measurement (
     PRIMARY KEY (batch_id, name),
     CONSTRAINT fk_batch FOREIGN KEY (batch_id) REFERENCES batch(id)
 );
-
-CREATE TABLE batch_note (
-    id SERIAL NOT NULL PRIMARY KEY,
-    beer_id INTEGER NOT NULL,
-    target VARCHAR,
-    value TEXT NOT NULL,
-    CONSTRAINT fk_beer FOREIGN KEY (beer_id) REFERENCES beer(id)
-);

@@ -46,6 +46,7 @@ import BatchHopsTable from "./batch-hops-table.vue";
 import { useBeerStore } from "../store/beer";
 import { computed, ref, defineComponent } from "vue";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/vue/outline";
+import { useNoteStore } from "@/client/store/note";
 
 export default defineComponent({
   components: {
@@ -65,9 +66,12 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  async setup(props) {
     const beerStore = useBeerStore();
     const batchStore = useBatchStore();
+    const noteStore = useNoteStore();
+
+    await noteStore.fetch(props.batch.id);
 
     const dateInput = ref<HTMLInputElement | null>(null);
     const date = ref(props.batch.date);

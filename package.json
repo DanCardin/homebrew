@@ -32,6 +32,11 @@
     "@headlessui/vue": "^1.2.0",
     "@heroicons/vue": "^1.0.1",
     "@prettier/plugin-pug": "^1.15.2",
+    "@storybook/addon-actions": "^6.2.9",
+    "@storybook/addon-essentials": "^6.2.9",
+    "@storybook/addon-links": "^6.2.9",
+    "@storybook/addon-postcss": "^2.0.0",
+    "@storybook/vue3": "^6.2.9",
     "@tailwindcss/aspect-ratio": "^0.2.1",
     "@tailwindcss/forms": "^0.3.2",
     "@tailwindcss/line-clamp": "^0.2.1",
@@ -40,6 +45,7 @@
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vitejs/plugin-vue": "^1.2.3",
+    "@vue/cli-plugin-babel": "^4.5.13",
     "@vue/compiler-sfc": "^3.0.11",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^5.0.2",
@@ -52,12 +58,15 @@
     "eslint-plugin-vue": "^7.10.0",
     "prettier": "^2.3.0",
     "pug": "^3.0.2",
+    "pug-plain-loader": "^1.1.0",
+    "pug-runtime": "^3.0.1",
     "purgecss-from-pug": "^4.0.3",
     "sass": "^1.34.0",
     "sass-loader": "^8.0.2",
     "tailwindcss": "^2.1.4",
     "typescript": "^3.9.9",
-    "vite": "^2.3.6"
+    "vite": "^2.3.6",
+    "vue-loader": "^16.2.0"
   },
   "eslintConfig": {
     "root": true,
@@ -79,17 +88,9 @@
       "ecmaVersion": 2020
     },
     "rules": {
-      "sort-imports": [
-        "warn"
-      ]
+      "sort-imports": ["warn"]
     },
-    "plugins": [
-      "only-warn"
-    ]
+    "plugins": ["only-warn"]
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+  "browserslist": ["> 1%", "last 2 versions", "not dead"]
 }

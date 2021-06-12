@@ -10,6 +10,7 @@ use tracing;
 use tracing::info;
 
 pub mod fermentable;
+pub mod note;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]

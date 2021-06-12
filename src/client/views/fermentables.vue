@@ -72,7 +72,7 @@ grid(
         :class="pending ? '' : 'enabled'",
         @click="createFermentable"
       )
-        plus-icon
+        plus-icon.w-5.h-5
 </template>
 
 <script lang="ts">

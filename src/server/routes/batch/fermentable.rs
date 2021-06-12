@@ -1,5 +1,5 @@
 use crate::error::ApiError;
-use crate::repos::batch_fermentable::{
+use crate::repos::batch::fermentable::{
     BatchFermentable, BatchFermentableId, BatchFermentableUpdate, NewBatchFermentable,
 };
 use crate::routes::batch::BatchId;
