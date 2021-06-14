@@ -1,49 +1,77 @@
-pub struct Abv {
-    original_brix: f32,
-    final_brix: f32,
+pub mod gravity;
+pub use gravity::*;
+
+pub mod brix;
+pub use brix::*;
+
+pub enum AbvFormula {
+    Standard,
+    Alternative,
+    Cutaia,
 }
 
-impl Abv {
-    fn gravity_to_brix(gravity: f32) -> f32 {
-        ((182.4601 * gravity - 775.6821) * gravity + 1262.7794) * gravity - 669.5622
-    }
-
-    fn brix_to_gravity(brix: f32) -> f32 {
-        (brix / (258.6 - ((brix / 258.2) * 227.1))) + 1.
-    }
-}
-
-impl Abv {
-    pub fn new() -> Self {
-        Self {
-            original_brix: 1.,
-            final_brix: 1.,
+impl AbvFormula {
+    pub fn calculate(&self, original: Gravity, final_: Gravity) -> f32 {
+        match self {
+            Self::Standard => Self::calculate_standard(original, final_),
+            Self::Alternative => Self::calculate_alternative(original, final_),
+            Self::Cutaia => Self::calculate_cutaia(original, final_),
         }
     }
 
-    pub fn original_brix(mut self, brix: f32) -> Self {
-        self.original_brix = brix;
-        self
+    pub fn calculate_standard(original: Gravity, final_: Gravity) -> f32 {
+        let abv = (original - final_) * 131.25;
+        abv.into()
     }
 
-    pub fn original_gravity(mut self, gravity: f32) -> Self {
-        self.original_brix = Abv::gravity_to_brix(gravity);
-        self
+    pub fn calculate_alternative(original: Gravity, final_: Gravity) -> f32 {
+        let a = 76.08 * (original - final_);
+        let b = 1.775 - original;
+        let c = final_ / 0.794;
+        let abv = (a / b) * c;
+        abv.into()
     }
 
-    pub fn final_brix(mut self, brix: f32) -> Self {
-        self.final_brix = brix;
-        self
+    pub fn calculate_cutaia(original: Gravity, final_: Gravity) -> f32 {
+        let original = Brix::from(original);
+        let final_ = Brix::from(final_);
+
+        let abw = (0.372 + 0.00357 * original) * (original - final_);
+        let a = 0.00001308
+            + 0.003868 * final_
+            + 0.00001275 * final_.pow(2)
+            + 0.000000063 * final_.pow(3)
+            + 1.;
+        let abv = abw * (a / 0.7909);
+        abv.into()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_calculates_standard() {
+        let og = Gravity::from(1.050);
+        let fg = Gravity::from(1.010);
+        let result = AbvFormula::Standard.calculate(og, fg);
+        assert_eq!(result, 5.249995);
     }
 
-    pub fn final_gravity(mut self, gravity: f32) -> Self {
-        self.final_brix = Self::gravity_to_brix(gravity);
-        self
+    #[test]
+    fn it_calculates_alternative() {
+        let og = Gravity::from(1.050);
+        let fg = Gravity::from(1.010);
+        let result = AbvFormula::Alternative.calculate(og, fg);
+        assert_eq!(result, 5.3394055);
     }
 
-    pub fn abv(&self) -> f32 {
-        let og = Self::brix_to_gravity(self.original_brix);
-        let fg = Self::brix_to_gravity(self.final_brix);
-        return ((76.08 * (og - fg)) / (1.775 - og)) * (fg / 0.794);
+    #[test]
+    fn it_calculates_cutaia() {
+        let og = Gravity::from(1.050);
+        let fg = Gravity::from(1.010);
+        let result = AbvFormula::Cutaia.calculate(og, fg);
+        assert_eq!(result, 5.2231045);
     }
 }

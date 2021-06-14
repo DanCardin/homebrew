@@ -45,6 +45,30 @@ pub static SRM_TO_HEX: Lazy<HashMap<u8, &'static str>> = Lazy::new(|| {
         38 => "#3B0607",
         39 => "#3A070B",
         40 => "#36080A",
-
     }
 });
+
+pub struct SRM(u8);
+
+impl SRM {
+    pub fn to_hex(&self) -> &'static str {
+        return SRM_TO_HEX.get(&self.0).unwrap_or(&"#000000");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn valid_srm() {
+        let srm = SRM(1).to_hex();
+        assert_eq!(srm, "#FFE699");
+    }
+
+    #[test]
+    fn invalid_srm() {
+        let srm = SRM(50).to_hex();
+        assert_eq!(srm, "#000000");
+    }
+}
