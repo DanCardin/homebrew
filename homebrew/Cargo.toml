@@ -1,0 +1,17 @@
+[package]
+name = "homebrew"
+version = "0.1.0"
+authors = ["Dan Cardin <ddcardin@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "homebrew"
+path = "src/lib.rs"
+
+[dependencies]
+anyhow = "1.0.32"
+bigdecimal = { version = "0.2.0", features = ["serde"] }
+chrono = { version = "*", features = ["serde"] }
+derive_more = "0.99.10"
+maplit = "1.0.2"
+once_cell = "1.4.1"

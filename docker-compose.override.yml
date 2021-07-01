@@ -1,0 +1,34 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:10
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: homebrew-web/dev.Dockerfile
+  #   entrypoint: "systemfd --no-pid -s http::8000 -- watchexec -r --exts rs,toml cargo run"
+  #   volumes:
+  #     - "./homebrew-web/:/usr/src/homebrew-web"
+
+  # ui:
+  #   build:
+  #     context: homebrew-ui
+  #     dockerfile: dev.Dockerfile
+  #   entrypoint: npm run dev
+  #   environment:
+  #     - "API_URL=web:8000"
+  #   ports:
+  #     - "${NGINX_PORT:-6272}:3000"
+  #   volumes:
+  #     - "./homebrew-ui/:/usr/src/app"
+
+volumes:
+  postgres:
+    driver: local

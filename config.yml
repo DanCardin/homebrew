@@ -1,7 +1,0 @@
-application_port: 8000
-database:
-  username: 'postgres'
-  password: 'postgres'
-  port: 5432
-  host: 'localhost'
-  database_name: "postgres"
