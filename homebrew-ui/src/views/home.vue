@@ -19,8 +19,8 @@
 </template>
 
 <script lang="ts">
-import { router } from "@/client/routes";
-import { useBeerStore } from "@/client/store/beer";
+import { router } from "@/routes";
+import { useBeerStore } from "@/store/beer";
 import { onMounted } from "vue";
 import { PlusIcon } from "@heroicons/vue/outline";
 

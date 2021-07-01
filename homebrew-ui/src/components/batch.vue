@@ -46,7 +46,7 @@ import BatchHopsTable from "./batch-hops-table.vue";
 import { useBeerStore } from "../store/beer";
 import { computed, ref, defineComponent } from "vue";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/vue/outline";
-import { useNoteStore } from "@/client/store/note";
+import { useNoteStore } from "@/store/note";
 
 export default defineComponent({
   components: {

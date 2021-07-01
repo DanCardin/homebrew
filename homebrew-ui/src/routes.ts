@@ -1,8 +1,8 @@
 import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router";
 
-import Beer from "@/client/views/beer.vue";
-import Fermentables from "@/client/views/fermentables.vue";
-import Home from "@/client/views/home.vue";
+import Beer from "@/views/beer.vue";
+import Fermentables from "@/views/fermentables.vue";
+import Home from "@/views/home.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {

@@ -1,9 +1,9 @@
 import { createApp } from "vue";
 
-import "@/client/styles/index.css";
+import "@/styles/index.css";
 
-import App from "@/client/app.vue";
-import { router } from "@/client/routes";
+import App from "@/app.vue";
+import { router } from "@/routes";
 import { createPinia } from 'pinia'
 
 

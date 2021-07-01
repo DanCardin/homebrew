@@ -874,6 +874,18 @@ dependencies = [
 name = "homebrew"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "bigdecimal",
+ "chrono",
+ "derive_more",
+ "maplit",
+ "once_cell",
+]
+
+[[package]]
+name = "homebrew-web"
+version = "0.1.0"
+dependencies = [
  "actix-multipart",
  "actix-web",
  "anyhow",
@@ -884,6 +896,7 @@ dependencies = [
  "csv",
  "derive_more",
  "futures",
+ "homebrew",
  "json",
  "listenfd",
  "maplit",

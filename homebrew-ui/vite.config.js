@@ -10,10 +10,11 @@ export default defineConfig({
     },
   },
   server: {
+    port: 6272,
     open: true,
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:8000",
+        target: process.env.API_URL || "http://127.0.0.1:6273",
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },

@@ -32,6 +32,56 @@
       ]
     }
   },
+  "0ad26ba0b4eb4e9df126de9ad02c347f6f5ddf3c74d6d617c516e6c128980931": {
+    "query": "\n            SELECT id, batch_id, fermentable_id, amount, time, unit FROM batch_fermentable\n            WHERE batch_id = $1\n            ORDER BY id\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "batch_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 2,
+          "name": "fermentable_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 3,
+          "name": "amount",
+          "type_info": "Numeric"
+        },
+        {
+          "ordinal": 4,
+          "name": "time",
+          "type_info": "Time"
+        },
+        {
+          "ordinal": 5,
+          "name": "unit",
+          "type_info": "Varchar"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        true,
+        true
+      ]
+    }
+  },
   "0ed88c3c123d076fd71d2025f0daccd04c0d974b480bba13b589191f45a93463": {
     "query": "UPDATE batch SET date = $1 WHERE id = $2 RETURNING id, beer_id, date",
     "describe": {
@@ -65,6 +115,75 @@
       ]
     }
   },
+  "1126f4e21df897798e90d1fe6bb8493f3a8d345d0c87ee51324c57f476c55982": {
+    "query": "\n            SELECT id, name, country, category, kind, color, ppg\n            FROM fermentable\n            WHERE (\n                CONCAT(\n                    name, ',', country, ',', category, ',',\n                    kind, ',', color, ',', ppg\n                ) ILIKE $1\n                OR\n                id = any($2)\n            )\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "name",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 2,
+          "name": "country",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 3,
+          "name": "category",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 4,
+          "name": "kind",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 5,
+          "name": "color",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 6,
+          "name": "ppg",
+          "type_info": "Numeric"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Int4Array"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "16ea902e873a5e409c525f400a2d8599a4cb077f73c9c569771d5b40655ca687": {
+    "query": "DELETE FROM batch_fermentable WHERE id = $1",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      },
+      "nullable": []
+    }
+  },
   "1af8a601ec607f3261fd9db9421c5b1f6dfb52be6c30f87f4192d4f8b9906059": {
     "query": "INSERT INTO beer DEFAULT VALUES RETURNING id, name, style",
     "describe": {
@@ -89,6 +208,50 @@
         "Left": []
       },
       "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "40946b562952ca0ae243efb7cad497b7f2b35bbaf4f0c2af7a24eae4621ae8b5": {
+    "query": "\n            SELECT id, batch_id, target, time, value FROM batch_note\n            WHERE batch_id = $1\n            ORDER BY id\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "batch_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 2,
+          "name": "target",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 3,
+          "name": "time",
+          "type_info": "Timestamp"
+        },
+        {
+          "ordinal": 4,
+          "name": "value",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
         false,
         false,
         false
@@ -164,7 +327,7 @@
         {
           "ordinal": 6,
           "name": "ppg",
-          "type_info": "Int4"
+          "type_info": "Numeric"
         }
       ],
       "parameters": {
@@ -173,7 +336,7 @@
       "nullable": [
         false,
         false,
-        false,
+        true,
         false,
         false,
         false,
@@ -218,7 +381,7 @@
         {
           "ordinal": 6,
           "name": "ppg",
-          "type_info": "Int4"
+          "type_info": "Numeric"
         }
       ],
       "parameters": {
@@ -228,13 +391,13 @@
           "Varchar",
           "Varchar",
           "Int4",
-          "Int4"
+          "Numeric"
         ]
       },
       "nullable": [
         false,
         false,
-        false,
+        true,
         false,
         false,
         false,
@@ -276,21 +439,54 @@
       ]
     }
   },
-  "748c7db4a10a6566474ff41f2201c0a80d1287f1b4c792ff3624a33a278a1efe": {
-    "query": "\n                INSERT INTO fermentable (name, country, category, kind, color, ppg)\n                VALUES ($1, $2, $3, $4, $5, $6)\n                ",
+  "73e76165507b0ab848064a571b59c86465c14a42af1b54aa26dda7a77cb23fc8": {
+    "query": "\n            INSERT INTO batch_fermentable (batch_id) VALUES ($1)\n            RETURNING id, batch_id, fermentable_id, amount, time, unit\n            ",
     "describe": {
-      "columns": [],
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "batch_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 2,
+          "name": "fermentable_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 3,
+          "name": "amount",
+          "type_info": "Numeric"
+        },
+        {
+          "ordinal": 4,
+          "name": "time",
+          "type_info": "Time"
+        },
+        {
+          "ordinal": 5,
+          "name": "unit",
+          "type_info": "Varchar"
+        }
+      ],
       "parameters": {
         "Left": [
-          "Varchar",
-          "Varchar",
-          "Varchar",
-          "Varchar",
-          "Int4",
           "Int4"
         ]
       },
-      "nullable": []
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        true,
+        true
+      ]
     }
   },
   "9f0c93101c3271eec080dd9581afaddbc5db8de445ed3e5f7e92aafef82a7592": {
@@ -357,8 +553,8 @@
       ]
     }
   },
-  "c307dfe25ceeade77a6c29ce545e98e84b5ea9a30aaa38d7119970f1b01f4ed1": {
-    "query": "\n            SELECT id, batch_id, kind, unit, name, amount, time FROM batch_ingredient\n            WHERE batch_id = $1 and kind = $2\n            ",
+  "c0902223fa8f8bea2c71e6acf8bf0eb7b775e9e7e41f1052b6c428ec5fd9a348": {
+    "query": "\n            UPDATE batch_note\n            SET time=$4, value=$5\n            WHERE id = $1 AND batch_id = $2 AND target = $3\n            RETURNING id, batch_id, target, time, value\n            ",
     "describe": {
       "columns": [
         {
@@ -373,33 +569,26 @@
         },
         {
           "ordinal": 2,
-          "name": "kind",
+          "name": "target",
           "type_info": "Varchar"
         },
         {
           "ordinal": 3,
-          "name": "unit",
-          "type_info": "Varchar"
+          "name": "time",
+          "type_info": "Timestamp"
         },
         {
           "ordinal": 4,
-          "name": "name",
-          "type_info": "Varchar"
-        },
-        {
-          "ordinal": 5,
-          "name": "amount",
-          "type_info": "Numeric"
-        },
-        {
-          "ordinal": 6,
-          "name": "time",
-          "type_info": "Varchar"
+          "name": "value",
+          "type_info": "Text"
         }
       ],
       "parameters": {
         "Left": [
           "Int4",
+          "Int4",
+          "Text",
+          "Timestamp",
           "Text"
         ]
       },
@@ -408,9 +597,7 @@
         false,
         false,
         false,
-        false,
-        false,
-        true
+        false
       ]
     }
   },
@@ -480,20 +667,8 @@
       ]
     }
   },
-  "dd1e91f858ee3c4742d7524ca5ecb77006a4134f59720e4313282277867c3e9d": {
-    "query": "DELETE FROM batch_ingredient WHERE id = $1",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Left": [
-          "Int4"
-        ]
-      },
-      "nullable": []
-    }
-  },
-  "ec510ee9a47757488cf5fc6869cd1cb974e9dfa32d38b96d3ac825a809fb7385": {
-    "query": "\n            INSERT INTO batch_ingredient (batch_id, kind, unit) VALUES ($1, $2, $3)\n            RETURNING id, batch_id, kind, unit, name, amount, time\n            ",
+  "d9a6868dc9223fd05e8d1550d3e4cadf81ef3a28aa773cc7e5c6937f86be7a0a": {
+    "query": "\n            UPDATE batch_fermentable\n            SET fermentable_id=$2, amount=$3, unit=$4\n            WHERE id = $1\n            RETURNING id, batch_id, fermentable_id, amount, time, unit\n            ",
     "describe": {
       "columns": [
         {
@@ -508,35 +683,91 @@
         },
         {
           "ordinal": 2,
-          "name": "kind",
-          "type_info": "Varchar"
+          "name": "fermentable_id",
+          "type_info": "Int4"
         },
         {
           "ordinal": 3,
-          "name": "unit",
-          "type_info": "Varchar"
-        },
-        {
-          "ordinal": 4,
-          "name": "name",
-          "type_info": "Varchar"
-        },
-        {
-          "ordinal": 5,
           "name": "amount",
           "type_info": "Numeric"
         },
         {
-          "ordinal": 6,
+          "ordinal": 4,
           "name": "time",
+          "type_info": "Time"
+        },
+        {
+          "ordinal": 5,
+          "name": "unit",
           "type_info": "Varchar"
         }
       ],
       "parameters": {
         "Left": [
           "Int4",
-          "Varchar",
+          "Int4",
+          "Numeric",
           "Varchar"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        true,
+        true
+      ]
+    }
+  },
+  "e397ca5651384879b8e1f5b9963d832527c592fc9947b594d3cab7e43382e3e8": {
+    "query": "DELETE FROM batch_note WHERE id = $1",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "ecca12a040a1261ba23aaf76a31a1f3e237407d7ff31ff72139a0189a70edf7a": {
+    "query": "\n            INSERT INTO batch_note (batch_id, target, time, value) VALUES ($1, $2, $3, $4)\n            RETURNING id, batch_id, target, time, value\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 1,
+          "name": "batch_id",
+          "type_info": "Int4"
+        },
+        {
+          "ordinal": 2,
+          "name": "target",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 3,
+          "name": "time",
+          "type_info": "Timestamp"
+        },
+        {
+          "ordinal": 4,
+          "name": "value",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Varchar",
+          "Timestamp",
+          "Text"
         ]
       },
       "nullable": [
@@ -544,9 +775,7 @@
         false,
         false,
         false,
-        false,
-        false,
-        true
+        false
       ]
     }
   },
@@ -590,6 +819,23 @@
         false,
         false
       ]
+    }
+  },
+  "fe7b66d5b79f35d8109ff6ba589318fff701c999561ab024123a2e392bcfc784": {
+    "query": "\n            INSERT INTO fermentable (name, country, category, kind, color, ppg)\n            VALUES (\n                UNNEST($1::VARCHAR[]),\n                UNNEST($2::VARCHAR[]),\n                UNNEST($3::VARCHAR[]),\n                UNNEST($4::VARCHAR[]),\n                UNNEST($5::INTEGER[]),\n                UNNEST($6::DECIMAL[])\n            )",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "VarcharArray",
+          "VarcharArray",
+          "VarcharArray",
+          "VarcharArray",
+          "Int4Array",
+          "NumericArray"
+        ]
+      },
+      "nullable": []
     }
   },
   "fef5026462516ff801c86fc0a29ca00a9c46e9ff5e7639fe7a35b1dc3e5b56d3": {

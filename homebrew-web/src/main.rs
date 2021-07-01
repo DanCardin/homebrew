@@ -116,7 +116,7 @@ async fn main() -> std::io::Result<()> {
     server = match listenfd.take_tcp_listener(0)? {
         Some(listener) => server.listen(listener)?,
         None => {
-            let port = 8000;
+            let port = 6273;
             server.bind(format!("127.0.0.1:{}", port))?
         }
     };

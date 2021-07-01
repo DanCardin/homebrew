@@ -36,7 +36,7 @@ button.h-5.w-5.rounded-full.items-center.justify-center.bg-yellow-200(
 
 <script lang="ts">
 import { ref, computed, defineComponent } from "vue";
-import { useNoteStore } from "@/client/store/note";
+import { useNoteStore } from "@/store/note";
 
 export default defineComponent({
   props: {
