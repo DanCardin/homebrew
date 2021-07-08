@@ -63,7 +63,7 @@ export const useBeerStore = defineStore({
     async createBatch(beerId: number) {
       const requests = useRequests();
       await requests.post("/api/beer/batch/new", { beerId });
-      await getBatches(beerId);
+      await this.getBatches(beerId);
     },
 
     async getBatches(beerId: number) {
@@ -82,7 +82,7 @@ export const useBeerStore = defineStore({
       const requests = useRequests();
       const payload = { batchId, date };
       await requests.post("/api/beer/batch/date/update", payload);
-      await getBatches(beerId);
+      await this.getBatches(beerId);
     },
 
     async deleteBatch(batchId: number) {

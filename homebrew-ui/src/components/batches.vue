@@ -9,9 +9,11 @@
       @click="createBatch(beerId)"
     ) Create Batch
 
-  .col-span-2.py-4.px-8.bg-white.shadow-lg.rounded-lg.my-2
-    .grid.grid-cols-1(v-for="batch of batches", :key="batch.id")
-      batch.col-span-1(:beerId="beerId", :batch="batch")
+  .col-span-2.bg-white.shadow-lg.rounded-lg.my-2.overflow-hidden(
+    v-for="batch of batches",
+    :key="batch.id"
+  )
+    batch.col-span-1(:beerId="beerId", :batch="batch")
 </template>
 
 <script lang="ts">
@@ -37,7 +39,7 @@ export default defineComponent({
     await beerStore.getBatches(props.beerId);
 
     async function createBatch(beerId: number) {
-      beerStore.createBatch(beerId);
+      await beerStore.createBatch(beerId);
     }
     return {
       batches,

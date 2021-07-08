@@ -8,7 +8,6 @@ CREATE TABLE batch (
     id SERIAL NOT NULL PRIMARY KEY,
     beer_id INTEGER NOT NULL,
     date DATE NOT NULL DEFAULT CURRENT_DATE,
-    UNIQUE (beer_id, date),
     CONSTRAINT fk_beer FOREIGN KEY (beer_id) REFERENCES beer(id)
 );
 

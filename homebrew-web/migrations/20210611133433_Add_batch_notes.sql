@@ -4,5 +4,5 @@ CREATE TABLE batch_note (
     target VARCHAR NOT NULL,
     time TIMESTAMP NOT NULL,
     value TEXT NOT NULL,
-    CONSTRAINT fk_beer FOREIGN KEY (batch_id) REFERENCES batch(id)
+    CONSTRAINT fk_batch FOREIGN KEY (batch_id) REFERENCES batch(id) ON DELETE CASCADE
 );
