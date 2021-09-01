@@ -8,7 +8,7 @@
       )
         span.align-middle {{ date }}
       input#brewDate.block.w-full.px-4.text-sm.border-gray-300.rounded-lg(
-        class="focus:ring-indigo-500 focus:border-indigo-500",
+        class="focus:border-indigo-500 focus:ring-indigo-500",
         v-model="date",
         v-show="editing",
         @blur="changeDate",
@@ -41,7 +41,9 @@
       batch-targets(:batchId="batch.id")
 
     h3.text-center.text-lg.leading-6.font-medium.text-gray-900.mb-3.uppercase Fermentables
-    suspense
+
+    .flex.flex-nowrap.py-2.justify-evenly
+      batch-fermentable-table(:batchId="batch.id")
       batch-fermentable-table(:batchId="batch.id")
 
     h3.text-center.text-lg.leading-6.font-medium.text-gray-900.mb-3.uppercase Hops
@@ -49,8 +51,9 @@
       batch-hops-table(:batchId="batch.id")
 
   .m-4.text-dark(v-if="expandedFermentation")
-    suspense
-      batch-gravity-readings(:batchId="batch.id")
+    .flex-1.flex-nowrap.py-2.justify-evenly
+      suspense
+        batch-gravity-readings(:batchId="batch.id")
 </template>
 
 <script lang="ts">
@@ -61,8 +64,8 @@ import BatchHopsTable from "./batch-hops-table.vue";
 import BatchGravityReadings from "./batch-gravity-readings.vue";
 import ConfirmDelete from "./confirm-delete.vue";
 import { useBeerStore } from "../store/beer";
-import { computed, ref, defineComponent } from "vue";
-import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/vue/outline";
+import { computed, defineComponent, ref } from "vue";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/outline";
 import { useNoteStore } from "@/store/note";
 
 export default defineComponent({

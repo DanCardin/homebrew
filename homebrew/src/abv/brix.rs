@@ -137,23 +137,6 @@ impl std::convert::From<Gravity> for Brix {
     }
 }
 
-pub struct BrixDifferential {
-    original: Brix,
-    final_: Brix,
-}
-
-impl BrixDifferential {
-    pub fn new(original: Brix, final_: Brix) -> Self {
-        Self { original, final_ }
-    }
-}
-
-impl From<(f32, f32)> for BrixDifferential {
-    fn from(brixes: (f32, f32)) -> Self {
-        Self::new(Brix(brixes.0), Brix(brixes.1))
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

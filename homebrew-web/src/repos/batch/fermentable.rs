@@ -1,5 +1,5 @@
 use crate::error::ApiError;
-use crate::routes::batch::BatchId;
+use crate::repos::batch::BatchId;
 use num_traits::cast::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use sqlx;

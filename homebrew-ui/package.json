@@ -14,6 +14,7 @@
   "dependencies": {
     "@types/lodash-es": "^4.17.4",
     "axios": "^0.21.1",
+    "chart.js": "^3.6.0",
     "clean-css-cli": "^5.3.0",
     "core-js": "^3.13.1",
     "country-flag-icons": "^1.2.10",
@@ -23,6 +24,7 @@
     "postcss": "^8.3.0",
     "postcss-loader": "^4.0.3",
     "vue": "^3.0.11",
+    "vue-chart-3": "^0.5.11",
     "vue-router": "^4.0.8",
     "vuejs-logger": "^1.5.5"
   },
@@ -88,9 +90,17 @@
       "ecmaVersion": 2020
     },
     "rules": {
-      "sort-imports": ["warn"]
+      "sort-imports": [
+        "warn"
+      ]
     },
-    "plugins": ["only-warn"]
+    "plugins": [
+      "only-warn"
+    ]
   },
-  "browserslist": ["> 1%", "last 2 versions", "not dead"]
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }

@@ -2,8 +2,7 @@ use maplit::hashmap;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 
-#[allow(dead_code)]
-pub static SRM_TO_HEX: Lazy<HashMap<u8, &'static str>> = Lazy::new(|| {
+static SRM_TO_HEX: Lazy<HashMap<u8, &'static str>> = Lazy::new(|| {
     hashmap! {
         1 => "#FFE699",
         2 => "#FFD878",

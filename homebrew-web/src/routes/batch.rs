@@ -1,4 +1,5 @@
 use crate::error::ApiError;
+use crate::repos::batch::BatchId;
 use actix_web::web::{Data, Json};
 use chrono::NaiveDate;
 use num_traits::cast::ToPrimitive;
@@ -16,12 +17,6 @@ pub mod note;
 #[serde(rename_all = "camelCase")]
 pub struct NewBatch {
     pub beer_id: i32,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct BatchId {
-    pub batch_id: i32,
 }
 
 #[derive(Debug, Deserialize)]

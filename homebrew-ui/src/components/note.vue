@@ -14,7 +14,7 @@ button.h-5.w-5.rounded-full.items-center.justify-center.bg-yellow-200(
   )
     .bg-yellow-200.text-yellow-500.border-2.border-yellow-600.text-xs.rounded.py-1.px-4.-left-4.bottom-2.bottom-full.absolute
       ul.list-inside.list-disc
-        li.select-text(v-for="note of noteStore.get(batchId)") {{ note.time }} {{ note.value }}
+        li.select-text(v-for="note of noteStore.get(batchId, target)") {{ note.time }} {{ note.value }}
       input.text-sm.placeholder-yellow-500.text-yellow-500.bg-yellow-200.border-0(
         class="focus:ring-0",
         type="text",
@@ -35,7 +35,7 @@ button.h-5.w-5.rounded-full.items-center.justify-center.bg-yellow-200(
 </template>
 
 <script lang="ts">
-import { ref, computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useNoteStore } from "@/store/note";
 
 export default defineComponent({
@@ -63,7 +63,7 @@ export default defineComponent({
     const newNote = ref<HTMLInputElement | null>(null);
     const noteValue = ref("");
 
-    let notes = ref([]);
+    const notes = ref([]);
 
     return {
       buttonClass: computed(() => {

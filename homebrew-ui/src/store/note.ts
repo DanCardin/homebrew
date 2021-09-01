@@ -1,19 +1,17 @@
-import { keyBy, mapValues } from "lodash-es";
-import { filter, find } from "lodash-es";
-import { reactive, readonly } from "vue";
-import { Requests, useRequests } from "./request";
-import { defineStore } from 'pinia';
+import { groupBy } from "lodash-es";
+import { defineStore } from "pinia";
+import { useRequests } from "./request";
 
 export const useNoteStore = defineStore({
   id: "note",
   state() {
     return {
-      batches: {}
+      batches: {},
     };
   },
   actions: {
-    get(batchId: number) {
-      return this.batches[batchId];
+    get(batchId: number, target: string) {
+      return this.batches[batchId][target];
     },
 
     async fetch(batchId: number) {
@@ -23,15 +21,20 @@ export const useNoteStore = defineStore({
         batchId,
       });
 
-      data.forEach((n) => {n.time = new Date(n.time).toLocaleString()});
-      this.batches[batchId] = data;
+      data.forEach((n) => {
+        n.time = new Date(n.time).toLocaleString();
+      });
+      this.batches[batchId] = groupBy(data, "target");
     },
 
     async newNote(batchId: number, target: string, value: string) {
       const requests = useRequests();
 
       const payload = {
-        batchId, target, value, time: new Date().toISOString().slice(0, -1),
+        batchId,
+        target,
+        value,
+        time: new Date().toISOString().slice(0, -1),
       };
       await requests.post("/api/beer/batch/note/new", payload);
       await this.fetch(batchId);
@@ -41,7 +44,9 @@ export const useNoteStore = defineStore({
       const requests = useRequests();
 
       const payload = {
-        batchId, note, time
+        batchId,
+        note,
+        time,
       };
       await requests.post("/api/beer/batch/note/update", payload);
       await this.fetch(batchId);
@@ -51,10 +56,11 @@ export const useNoteStore = defineStore({
       const requests = useRequests();
 
       const payload = {
-        batchId, noteId,
+        batchId,
+        noteId,
       };
       await requests.post("/api/beer/batch/note/delete", payload);
       await this.fetch(batchId);
-    }
-  }
+    },
+  },
 });

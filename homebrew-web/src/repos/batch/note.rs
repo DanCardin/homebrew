@@ -1,5 +1,5 @@
 use crate::error::ApiError;
-use crate::routes::batch::BatchId;
+use crate::repos::batch::BatchId;
 use serde::{Deserialize, Serialize};
 use sqlx;
 use sqlx::postgres::PgPool;

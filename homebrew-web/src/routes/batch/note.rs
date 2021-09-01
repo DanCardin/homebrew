@@ -1,6 +1,6 @@
 use crate::error::ApiError;
 use crate::repos::batch::note::{BatchNote, BatchNoteId, BatchNoteUpdate, NewBatchNote};
-use crate::routes::batch::BatchId;
+use crate::repos::batch::BatchId;
 use actix_web::web::{Data, Json};
 use sqlx::postgres::PgPool;
 use tracing;
